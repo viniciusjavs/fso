@@ -2,15 +2,25 @@ import React from 'react'
 
 const App = () => {
   const course = 'Half Stack application development'
-  const content = [{part: 'Fundamentals of React', exercises: 10},
-                   {part: 'Using props to pass data', exercises: 7},
-                   {part: 'State of a component', exercises: 10}]
+  const parts = [
+    {
+      name: 'Fundamentals of React',
+      exercises: 10
+    },
+    {
+      name: 'Using props to pass data',
+      exercises: 7
+    },
+    {
+      name: 'State of a component',
+      exercises: 10
+    }]
 
   return (
     <div>
       <Header course={course}/>
-      <Content content={content}/>
-      <Total total={content.reduce((acc, content) => acc + content.exercises, 0)}/>
+      <Content parts={parts}/>
+      <Total parts={parts}/>
     </div>
   )
 }
@@ -24,9 +34,9 @@ const Header = (props) => {
 const Content = (props) => {
   return (
     <div>
-      <Part content={props.content[0]}/>
-      <Part content={props.content[1]}/>
-      <Part content={props.content[2]}/>
+      <Part part={props.parts[0]}/>
+      <Part part={props.parts[1]}/>
+      <Part part={props.parts[2]}/>
     </div>
   )
 }
@@ -34,14 +44,16 @@ const Content = (props) => {
 const Part = (props) => {
   return (
     <p>
-      {props.content.part} {props.content.exercises}
+      {props.part.name} {props.part.exercises}
     </p>
   )
 }
 
 const Total = (props) => {
   return (
-    <p>Number of exercises {props.total}</p>
+    <p>
+      Number of exercises {props.parts.reduce((acc, part) => acc + part.exercises, 0)}
+    </p>
   )
 }
 
