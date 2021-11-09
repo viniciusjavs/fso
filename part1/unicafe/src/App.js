@@ -39,20 +39,22 @@ const percent = (number) => number + '%'
 const Statistics = ({ good, neutral, bad, total, average, positive }) => {
   if (good || neutral || bad)
     return (
-      <div>
-        <StatisticLine category='good' value={good} />
-        <StatisticLine category='neutral' value={neutral} />
-        <StatisticLine category='bad' value={bad} />
-        <StatisticLine category='all' value={total()} />
-        <StatisticLine category='average' value={average()} />
-        <StatisticLine category='positive' value={percent(positive())} />
-      </div>
+      <table>
+        <tbody>
+          <StatisticLine category='good' value={good} />
+          <StatisticLine category='neutral' value={neutral} />
+          <StatisticLine category='bad' value={bad} />
+          <StatisticLine category='all' value={total()} />
+          <StatisticLine category='average' value={average()} />
+          <StatisticLine category='positive' value={percent(positive())} />
+        </tbody>
+      </table>
     )
   return (
     <p>No feedback given</p>
   )
 }
 
-const StatisticLine = ({ category, value }) => <p>{category} {value}</p>
+const StatisticLine = ({ category, value }) => <tr><td>{category}</td><td>{value}</td></tr>
 
 export default App;
