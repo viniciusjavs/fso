@@ -18,8 +18,6 @@ const App = () => {
     return result
   }
 
-  const percent = (number) => number + '%'
-
   return (
     <div>
       <h1>give feedback</h1>
@@ -29,22 +27,32 @@ const App = () => {
         <Button handleClick={()=> setBad(bad + 1)} text='bad'/>
       </div>
       <h1>statistics</h1>
-      <div>
-        <Stats category='good' value={good} />
-        <Stats category='neutral' value={neutral} />
-        <Stats category='bad' value={bad} />
-      </div>
-      <div>
-        <Stats category='all' value={total()} />
-        <Stats category='average' value={average()} />
-        <Stats category='positive' value={percent(positive())} />
-      </div>
+      <Statistics good={good} neutral={neutral} bad={bad} total={total} average={average} positive={positive} />
     </div>
   );
 }
 
 const Button = ({ handleClick, text }) => <button onClick={handleClick}>{text}</button>
 
-const Stats = ({ category, value }) => <p>{category} {value}</p>
+const percent = (number) => number + '%'
+
+const Statistics = ({ good, neutral, bad, total, average, positive }) => {
+  if (good || neutral || bad)
+    return (
+      <div>
+        <StatisticLine category='good' value={good} />
+        <StatisticLine category='neutral' value={neutral} />
+        <StatisticLine category='bad' value={bad} />
+        <StatisticLine category='all' value={total()} />
+        <StatisticLine category='average' value={average()} />
+        <StatisticLine category='positive' value={percent(positive())} />
+      </div>
+    )
+  return (
+    <p>No feedback given</p>
+  )
+}
+
+const StatisticLine = ({ category, value }) => <p>{category} {value}</p>
 
 export default App;
