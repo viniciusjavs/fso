@@ -23,19 +23,36 @@ const App = () => {
   return (
     <>
     <div>
+      <h1>Anecdote of the day</h1>
       {anecdotes[selected]}
     </div>
-    <div>
-      has {points[selected]} votes
-    </div>
+    <DisplayVotes points={points} selected={selected} />
     <div>
       <button onClick={addPoint}>vote</button>
       <button onClick={() => setSelected(getRandomInt(anecdotes.length))}>next anecdote</button>
+    </div>
+    <div>
+      <h1>Anecdote with most votes</h1>
+      {anecdotes[points.indexOf(Math.max(...points))]}
     </div>
     </>
   );
 }
 
 const getRandomInt = (max) => Math.floor(Math.random() * max)
+
+const DisplayVotes = ({ points, selected }) => {
+  if (points[selected] === 0 || points[selected] === 1)
+    return (
+      <div>
+        has {points[selected]} vote
+      </div>
+    )
+  return (
+    <div>
+      has {points[selected]} votes
+    </div>
+  )
+}
 
 export default App;
