@@ -13,10 +13,13 @@ const App = () => {
 
   const [selected, setSelected] = useState(getRandomInt(anecdotes.length))
   const [points, setPoints] = useState(Array(anecdotes.length).fill(0))
+  const [mostVoted, setMostVoted] = useState(0)
 
-  const addPoint = () => {
+  const setVote = () => {
     const newArray = [...points]
     newArray[selected] += 1
+    if (newArray[mostVoted] < newArray[selected])
+      setMostVoted(selected)
     setPoints(newArray)
   }
 
@@ -28,12 +31,12 @@ const App = () => {
     </div>
     <DisplayVotes points={points} selected={selected} />
     <div>
-      <button onClick={addPoint}>vote</button>
+      <button onClick={setVote}>vote</button>
       <button onClick={() => setSelected(getRandomInt(anecdotes.length))}>next anecdote</button>
     </div>
     <div>
       <h1>Anecdote with most votes</h1>
-      {anecdotes[points.indexOf(Math.max(...points))]}
+      {anecdotes[mostVoted]}
     </div>
     </>
   );
