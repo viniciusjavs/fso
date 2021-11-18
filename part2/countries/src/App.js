@@ -25,12 +25,12 @@ const App = () => {
         <label htmlFor="country">find countries </label>
         <input id="country" value={searchCountry} onChange={handleSearchChange}/>
       </div>
-      <Result countries={foundCountries}/>
+      <Result countries={foundCountries} handleClick={(name) => setSearchCountry(name)} />
     </>
   )
 }
 
-const Result = ({ countries }) => {
+const Result = ({ countries, handleClick }) => {
   const maxList = 10
   if (countries.length === 1)
     return <Country country={countries[0]}/>
@@ -38,7 +38,14 @@ const Result = ({ countries }) => {
     return (<div>Too many matches, specify another filter</div>)
   return (
     <div>
-      {countries.map(({name}) => <div key={name}>{name}</div>)}
+      {countries.map(({name}) => {
+        return (
+          <div key={name}>
+            {name}
+            <button type="button" onClick={() => handleClick(name)}>show</button>
+          </div>
+        )
+      })}
     </div>
   )
 }
