@@ -38,6 +38,16 @@ const App = ()  => {
     }
   }
 
+  const delPerson = (name, id) => {
+    if(window.confirm(`Delete ${name} ?`)) {
+      personService
+        .del(id)
+        .then(() => {
+          setPersons(persons.filter((p) => p.id !== id))
+        })
+    }
+  }
+
   const handleNameChange = ( {target: {value}} ) => setNewName(value)
   const handleNumberChange = ( {target: {value}} ) => setNewNumber(value)
   const handleSearchChange = ( {target: {value}} ) => setSearchName(value)
@@ -54,7 +64,7 @@ const App = ()  => {
       <PersonForm addPerson={addPerson} name={newName} handleNameChange={handleNameChange} 
         number={newNumber} handleNumberChange={handleNumberChange} />
       <h3>Numbers</h3>
-      <Persons persons={personsToShow} />
+      <Persons persons={personsToShow} handleDel={delPerson} />
     </div>
   )
 }
