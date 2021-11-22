@@ -28,6 +28,8 @@ const App = ()  => {
       })
   }, [])
 
+  const removeId = id => setPersons(persons.filter(p => p.id !== id))
+
   const addPerson = (event) => {
     event.preventDefault()
     const newPerson = {
@@ -44,10 +46,9 @@ const App = ()  => {
             setPersons(persons.map( p => p.id === person.id ? returnedPerson : p))
           })
           .catch(error => {
-            const errorMsg = `Information of ${newPerson.name} has already been removed form server`
-            notify(errorMsg, false)
-            console.error(errorMsg);
-            setPersons(persons.filter(p => p.id !== person.id))
+            notify(`Information of ${newPerson.name} has already been removed from server`, false)
+            console.error(error.response);
+            removeId(person.id)
           })
           notify(`Updated ${newPerson.name}'s number`)
       }
@@ -69,7 +70,12 @@ const App = ()  => {
       personService
         .del(id)
         .then(() => {
-          setPersons(persons.filter((p) => p.id !== id))
+          removeId(id)
+          notify(`Deleted ${name}`)
+        })
+        .catch(() => {
+            notify(`${name} had already been removed from server`, false)
+            removeId(id)
         })
     }
   }
