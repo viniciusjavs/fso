@@ -22,7 +22,7 @@ const App = () => {
   return (
     <>
       <div>
-        <label htmlFor="country">find countries </label>
+        <label htmlFor="country">find countries</label> &nbsp;
         <input id="country" value={searchCountry} onChange={handleSearchChange}/>
       </div>
       <Result countries={foundCountries} handleClick={(name) => setSearchCountry(name)} />
@@ -53,10 +53,10 @@ const Result = ({ countries, handleClick }) => {
 const Country = ({ country: {name, capital, population, languages, flags} }) => {
   return (
     <div>
-      <h1>{name}</h1>
+      <h2>{name}</h2>
       <p>capital {capital}</p>
       <p>population {population}</p>
-      <h2>Spoken languages</h2>
+      <h3>Spoken languages</h3>
       <ul>
         {languages.map(({ name, iso639_2 }) => <li key={iso639_2}>{name}</li>)}
       </ul>
@@ -67,9 +67,13 @@ const Country = ({ country: {name, capital, population, languages, flags} }) => 
 }
 
 const Weather = ({ city }) => {
-  const [temp, setTemp] = useState('')
-  const [weather_icons, setWeatherIcons] = useState([])
-  const [wind, setWind] = useState('')
+  const [weather, setWeather] = useState({
+                                          temperature: null,
+                                          weather_icons: [],
+                                          weather_descriptions: [],
+                                          wind_speed: null,
+                                          wind_dir: null
+                                          })
 
   const toMph = (kph) => Math.round(kph / 1.609344)
 
@@ -82,19 +86,18 @@ const Weather = ({ city }) => {
         }
       })
       .then(response => {
-        const { current: {temperature, weather_icons, wind_speed, wind_dir} } = response.data
-        setTemp(`${temperature} Celsius`)
-        setWeatherIcons(weather_icons)
-        setWind(`${toMph(wind_speed)} mph direction ${wind_dir}`)
+        setWeather(response.data.current)
       })
   }, [city])
 
+  const {temperature, weather_icons, weather_descriptions, wind_speed, wind_dir} = weather
+
   return (
     <>
-      <h2>Weather in {city}</h2>
-      <p><b>temperature:</b> {temp}</p>
-      {weather_icons.map(icon => <img key={icon} src={icon} alt={`weather icon of ${city}`}/>)}
-      <p><b>wind:</b> {wind}</p>
+      <h3>Weather in {city}</h3>
+      <p><strong>temperature:</strong> {`${temperature} Celsius`}</p>
+      {weather_icons.map((icon, i) => <img key={icon} src={icon} alt={`weather condition: ${weather_descriptions[i]}`}/>)}
+      <p><strong>wind:</strong> {`${toMph(wind_speed)} mph direction ${wind_dir}`}</p>
     </>
   )
 }
