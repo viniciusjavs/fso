@@ -44,13 +44,18 @@ const App = ()  => {
           .update(person.id, newPerson)
           .then(returnedPerson => {
             setPersons(persons.map( p => p.id === person.id ? returnedPerson : p))
+            notify(`Updated ${newPerson.name}'s number`)
           })
           .catch(error => {
-            notify(`Information of ${newPerson.name} has already been removed from server`, false)
-            console.error(error.response);
-            removeId(person.id)
+            console.error(error.response)
+            if (error.response.status === 404) {
+              notify(`Information of ${newPerson.name} has already been removed from server`, false)
+              removeId(person.id)
+            }
+            else {
+              notify(error.response.data.error, false)
+            }
           })
-          notify(`Updated ${newPerson.name}'s number`)
       }
     }
     else {
@@ -58,8 +63,12 @@ const App = ()  => {
         .create(newPerson)
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
+          notify(`Added ${newPerson.name}`)
         })
-        notify(`Added ${newPerson.name}`)
+        .catch(error => {
+          console.error(error.response)
+          notify(error.response.data.error, false)
+        })
     }
     setNewName('')
     setNewNumber('')
