@@ -1,0 +1,30 @@
+{
+  "name": "bloglist",
+  "version": "1.0.0",
+  "description": "an application to save information about interesting blogs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/viniciusjavs/fso-part4.git"
+  },
+  "author": "Vinicius Sa",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/viniciusjavs/fso-part4/issues"
+  },
+  "homepage": "https://github.com/viniciusjavs/fso-part4#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "mongoose": "^6.0.14"
+  }
+}
