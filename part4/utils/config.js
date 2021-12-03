@@ -5,7 +5,7 @@ const MONGODB_PASS = process.env.MONGODB_PASS
 const MONGODB_URI = process.env.MONGODB_URI
 
 module.exports = {
-    PORT,
-    MONGODB_PASS,
-    MONGODB_URI
+  PORT,
+  MONGODB_PASS,
+  MONGODB_URI
 }

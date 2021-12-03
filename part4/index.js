@@ -1,6 +1,5 @@
 const http = require('http')
 const config = require('./utils/config')
-const Blog = require('./models/blog')
 const app = require('./app')
 const logger = require('./utils/logger')
 
