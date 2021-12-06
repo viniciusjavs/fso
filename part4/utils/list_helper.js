@@ -17,8 +17,21 @@ const mostBlogs = blogs => {
   return max
 }
 
+const mostLikes = blogs => {
+  let max = {}
+  blogs
+    .map(({ author, likes }) => ({ author, likes }))
+    .reduce((map, { author, likes }) => map.set(author, (map.get(author) || 0) + likes), new Map())
+    .forEach((likes, author) => {
+      if (!max.likes || (max.likes < likes))
+        max = { author, likes }
+    })
+  return max
+}
+
 module.exports = {
   totalLikes,
   favoriteBlog,
-  mostBlogs
+  mostBlogs,
+  mostLikes
 }
