@@ -106,6 +106,27 @@ test('blog without url is not added', async () => {
   expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
 })
 
+test('an individual blog can be updated', async () => {
+  const blogsAtStart = await helper.blogsInDB()
+
+  const blogToUpdate = {
+    likes: blogsAtStart[0].likes + 1,
+    ...blogsAtStart[0]
+  }
+
+  const resultBlog = await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(blogToUpdate)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsAtEnd = await helper.blogsInDB()
+
+  expect(blogsAtEnd).toHaveLength(blogsAtStart.length)
+  expect(blogToUpdate).toEqual(resultBlog.body)
+  expect(blogsAtEnd).toContainEqual(resultBlog.body)
+})
+
 test('a blog can be deleted', async () => {
   const blogsAtStart = await helper.blogsInDB()
   const blogToDelete = blogsAtStart[0]
