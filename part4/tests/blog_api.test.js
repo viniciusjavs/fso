@@ -54,6 +54,26 @@ test('a valid blog can be added', async () => {
   expect(blogs).toContainEqual(newBlog)
 })
 
+test('add a blog with missing likes property', async () => {
+  const newBlog = {
+    title: 'Canonical string reduction',
+    author: 'Edsger W. Dijkstra',
+    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html'
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsAtEnd = await helper.blogsInDB()
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
+
+  const blogs = blogsAtEnd.map(b => delete b.id && b)
+  expect(blogs).toContainEqual({ likes: 0, ...newBlog })
+})
+
 afterAll(() => {
   mongoose.disconnect()
 })
