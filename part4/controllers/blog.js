@@ -13,6 +13,11 @@ blogsRouter.post('/', async (request, response) => {
   response.status(201).json(savedBlog)
 })
 
+blogsRouter.get('/:id', async ({ params: { id } }, res, next) => {
+  const returnedBlog = await Blog.findById(id)
+  returnedBlog ? res.json(returnedBlog) : next(new NotFoundError('id not found'))
+})
+
 blogsRouter.put('/:id', async ({ params: { id }, body }, res, next) => {
   delete body.id
   const returnedBlog = await Blog.findByIdAndUpdate(id, body, { new: true })
