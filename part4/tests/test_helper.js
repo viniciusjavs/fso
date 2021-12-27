@@ -1,5 +1,17 @@
 const Blog = require('../models/blog')
+const User = require('../models/user')
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
+
+const initialUsers = [
+  {
+    username: 'root',
+    name: 'Superuser'
+  },
+  {
+    username: 'user'
+  }
+]
 
 const initialBlogs = [
   {
@@ -21,13 +33,23 @@ const blogsInDB = async () => {
   return blogs.map(blog => blog.toJSON())
 }
 
+const usersInDB = async () => {
+  const users = await User.find({})
+  return users.map(u => u.toJSON())
+}
+
 const nonExistingId = () => {
   const id = new mongoose.Types.ObjectId()
   return id.toString()
 }
 
+const genHash = async pass => await bcrypt.hash(pass, 1)
+
 module.exports = {
+  initialUsers,
   initialBlogs,
   blogsInDB,
-  nonExistingId
+  nonExistingId,
+  usersInDB,
+  genHash
 }
