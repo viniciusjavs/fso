@@ -38,7 +38,7 @@ const usersInDB = async () => {
   return users.map(u => u.toJSON())
 }
 
-const nonExistingId = () => {
+const randomId = () => {
   const id = new mongoose.Types.ObjectId()
   return id.toString()
 }
@@ -49,7 +49,7 @@ module.exports = {
   initialUsers,
   initialBlogs,
   blogsInDB,
-  nonExistingId,
   usersInDB,
-  genHash
+  genHash,
+  randomId
 }

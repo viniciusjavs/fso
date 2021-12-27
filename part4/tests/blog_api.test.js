@@ -54,10 +54,8 @@ describe('viewing a specific blog', () => {
   })
 
   test('fails with statuscode 404 if blog does not exist', async () => {
-    const validNonexistingId = helper.nonExistingId()
-
     await api
-      .get(`/api/blogs/${validNonexistingId}`)
+      .get(`/api/blogs/${helper.randomId()}`)
       .expect(404)
   })
 
