@@ -3,11 +3,26 @@ const supertest = require('supertest')
 const helper = require('./test_helper')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const api = supertest(app)
 
+let testUserId
+
+beforeAll(async () => {
+  await User.deleteMany({})
+  await User.insertMany(helper.initialUsers)
+
+  const user = await User.findOne({ username: 'root' })
+
+  testUserId = user._id.toString()
+
+})
+
 beforeEach(async () => {
   await Blog.deleteMany({})
+  const users = await helper.usersInDB()
+  users.forEach((elem, idx) => helper.initialBlogs[idx].userId = elem.id)
   await Blog.insertMany(helper.initialBlogs)
 })
 
@@ -49,7 +64,7 @@ describe('viewing a specific blog', () => {
       .get(`/api/blogs/${blogToView.id}`)
       .expect(200)
       .expect('Content-Type', /application\/json/)
-
+    blogToView.userId = blogToView.userId.toString()
     expect(resultBlog.body).toEqual(blogToView)
   })
 
@@ -74,7 +89,8 @@ describe('addition of a new blog', () => {
       title: 'Canonical string reduction',
       author: 'Edsger W. Dijkstra',
       url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-      likes: 12
+      likes: 12,
+      userId: new mongoose.Types.ObjectId(testUserId)
     }
 
     await api
@@ -94,7 +110,8 @@ describe('addition of a new blog', () => {
     const newBlog = {
       title: 'Canonical string reduction',
       author: 'Edsger W. Dijkstra',
-      url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html'
+      url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+      userId: new mongoose.Types.ObjectId(testUserId)
     }
 
     await api
@@ -113,7 +130,8 @@ describe('addition of a new blog', () => {
   test('fails with statuscode 400 if title is missing', async () => {
     const newBlog = {
       author: 'Edsger W. Dijkstra',
-      url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html'
+      url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+      userId: testUserId
     }
 
     await api
@@ -129,7 +147,8 @@ describe('addition of a new blog', () => {
   test('fails with statuscode 400 if url is missing', async () => {
     const newBlog = {
       title: 'Canonical string reduction',
-      author: 'Edsger W. Dijkstra'
+      author: 'Edsger W. Dijkstra',
+      userId: testUserId
     }
 
     await api
@@ -162,8 +181,8 @@ describe('updating a blog', () => {
     const blogsAtEnd = await helper.blogsInDB()
 
     expect(blogsAtEnd).toHaveLength(blogsAtStart.length)
-    expect(blogToUpdate).toEqual(resultBlog.body)
-    expect(blogsAtEnd).toContainEqual(resultBlog.body)
+    expect(JSON.parse(JSON.stringify(blogToUpdate))).toEqual(resultBlog.body)
+    expect(blogsAtEnd).toContainEqual(blogToUpdate)
   })
 })
 
