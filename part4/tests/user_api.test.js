@@ -5,16 +5,13 @@ const app = require('../app')
 
 const api = supertest(app)
 
+beforeEach(async () => {
+  await User.deleteMany({})
+  const user = new User({ username: 'root' })
+  await user.save()
+})
+
 describe('when there is initially one user in db', () => {
-  beforeEach(async () => {
-    await User.deleteMany({})
-
-    const passwordHash = await helper.genHash('testPass')
-    const user = new User({ username: 'root', passwordHash })
-
-    await user.save()
-  })
-
   test('users are returned as json', async () => {
     await api
       .get('/api/users')
@@ -29,8 +26,10 @@ describe('when there is initially one user in db', () => {
 
     expect(response.body).toHaveLength(totalUsers.length)
   })
+})
 
-  test('creation succeeds with a fresh username', async () => {
+describe('add a new user is successful', () => {
+  test('with a fresh username', async () => {
     const usersAtStart = await helper.usersInDB()
 
     const newUser = {
@@ -52,7 +51,30 @@ describe('when there is initially one user in db', () => {
     expect(usernames).toContain(newUser.username)
   })
 
-  test('creation fails with proper statuscode and message if username already taken', async () => {
+  test('when name is not required', async () => {
+    const usersAtStart = await helper.usersInDB()
+
+    const newUser = {
+      username: 'ada',
+      password: 'adaPass'
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await helper.usersInDB()
+    expect(usersAtEnd).toHaveLength(usersAtStart.length + 1)
+
+    const usernames = usersAtEnd.map(u => u.username)
+    expect(usernames).toContain(newUser.username)
+  })
+})
+
+describe('add a new user fails', () => {
+  test('if username is already taken', async () => {
     const usersAtStart = await helper.usersInDB()
 
     const newUser = {
@@ -68,6 +90,85 @@ describe('when there is initially one user in db', () => {
       .expect('Content-Type', /application\/json/)
 
     expect(result.body.error).toContain('expected `username` to be unique')
+
+    const usersAtEnd = await helper.usersInDB()
+    expect(usersAtEnd).toHaveLength(usersAtStart.length)
+  })
+
+  test('if username is less then 3 characters', async () => {
+    const usersAtStart = await helper.usersInDB()
+
+    const newUser = {
+      username: 'ro',
+      password: 'tux'
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(result.body.error).toContain('`username` (`ro`) is shorter than the minimum allowed')
+
+    const usersAtEnd = await helper.usersInDB()
+    expect(usersAtEnd).toHaveLength(usersAtStart.length)
+  })
+
+  test('if password is missing', async () => {
+    const usersAtStart = await helper.usersInDB()
+
+    const newUser = {
+      username: 'root'
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(result.body.error).toContain('invalid password')
+
+    const usersAtEnd = await helper.usersInDB()
+    expect(usersAtEnd).toHaveLength(usersAtStart.length)
+  })
+
+  test('if password is not a string', async () => {
+    const usersAtStart = await helper.usersInDB()
+
+    const newUser = {
+      username: 'root',
+      password: 123
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(result.body.error).toContain('invalid password')
+
+    const usersAtEnd = await helper.usersInDB()
+    expect(usersAtEnd).toHaveLength(usersAtStart.length)
+  })
+
+  test('if password is less then 3 characters', async () => {
+    const usersAtStart = await helper.usersInDB()
+
+    const newUser = {
+      username: 'root',
+      password: 'tu'
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    expect(result.body.error).toContain('minlength is 3')
 
     const usersAtEnd = await helper.usersInDB()
     expect(usersAtEnd).toHaveLength(usersAtStart.length)
