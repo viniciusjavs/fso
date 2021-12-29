@@ -95,6 +95,61 @@ describe('viewing a specific blog', () => {
   })
 })
 
+describe('deleting a blog', () => {
+  test('succeeds with statuscode 204 if id is valid', async () => {
+    const blogsAtStart = await helper.blogsInDB()
+    const blogToDelete = blogsAtStart[0]
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .auth(apiTestKey, { type: 'bearer' })
+      .expect(204)
+
+    const blogsAtEnd = await helper.blogsInDB()
+
+    expect(blogsAtEnd).toHaveLength(
+      helper.initialBlogs.length - 1
+    )
+    const blogIds = blogsAtEnd.map(b => b.id)
+    expect(blogIds).not.toContain(blogToDelete.id)
+  })
+
+  test('failts with statuscode 401 if auth is not set', async () => {
+    const blogsAtStart = await helper.blogsInDB()
+    const blogToDelete = blogsAtStart[0]
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .expect(401)
+
+    const blogsAtEnd = await helper.blogsInDB()
+
+    expect(blogsAtEnd).toHaveLength(
+      helper.initialBlogs.length
+    )
+    const blogIds = blogsAtEnd.map(b => b.id)
+    expect(blogIds).toContain(blogToDelete.id)
+  })
+
+  test('failts with statuscode 404 if blog doesnt belongs to user', async () => {
+    const blogsAtStart = await helper.blogsInDB()
+    const blogToDelete = blogsAtStart[1]
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .auth(apiTestKey, { type: 'bearer' })
+      .expect(404)
+
+    const blogsAtEnd = await helper.blogsInDB()
+
+    expect(blogsAtEnd).toHaveLength(
+      helper.initialBlogs.length
+    )
+    const blogIds = blogsAtEnd.map(b => b.id)
+    expect(blogIds).toContain(blogToDelete.id)
+  })
+})
+
 describe('addition of a new blog', () => {
   test('succeeds with valid data', async () => {
     const newBlog = {
@@ -260,61 +315,6 @@ describe('updating a blog', () => {
     expect(blogsAtEnd).toHaveLength(blogsAtStart.length)
     expect(JSON.parse(JSON.stringify(blogToUpdate))).toEqual(resultBlog.body)
     expect(blogsAtEnd).toContainEqual(blogToUpdate)
-  })
-})
-
-describe('deleting a blog', () => {
-  test('succeeds with statuscode 204 if id is valid', async () => {
-    const blogsAtStart = await helper.blogsInDB()
-    const blogToDelete = blogsAtStart[0]
-
-    await api
-      .delete(`/api/blogs/${blogToDelete.id}`)
-      .set('Authorization', `Bearer ${apiTestKey}`)
-      .expect(204)
-
-    const blogsAtEnd = await helper.blogsInDB()
-
-    expect(blogsAtEnd).toHaveLength(
-      helper.initialBlogs.length - 1
-    )
-    const blogIds = blogsAtEnd.map(b => b.id)
-    expect(blogIds).not.toContain(blogToDelete.id)
-  })
-
-  test('failts with statuscode 401 if auth is not set', async () => {
-    const blogsAtStart = await helper.blogsInDB()
-    const blogToDelete = blogsAtStart[0]
-
-    await api
-      .delete(`/api/blogs/${blogToDelete.id}`)
-      .expect(401)
-
-    const blogsAtEnd = await helper.blogsInDB()
-
-    expect(blogsAtEnd).toHaveLength(
-      helper.initialBlogs.length
-    )
-    const blogIds = blogsAtEnd.map(b => b.id)
-    expect(blogIds).toContain(blogToDelete.id)
-  })
-
-  test('failts with statuscode 404 if blog doesnt belongs to user', async () => {
-    const blogsAtStart = await helper.blogsInDB()
-    const blogToDelete = blogsAtStart[1]
-
-    await api
-      .delete(`/api/blogs/${blogToDelete.id}`)
-      .set('Authorization', `Bearer ${apiTestKey}`)
-      .expect(404)
-
-    const blogsAtEnd = await helper.blogsInDB()
-
-    expect(blogsAtEnd).toHaveLength(
-      helper.initialBlogs.length
-    )
-    const blogIds = blogsAtEnd.map(b => b.id)
-    expect(blogIds).toContain(blogToDelete.id)
   })
 })
 

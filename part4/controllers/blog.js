@@ -40,7 +40,8 @@ blogsRouter.delete('/:id', userExtractor, async({ params: { id }, userId }, res)
     res.status(404).send({ error: 'id not found' })
   }
   else {
-    await returnedBlog.remove() && res.status(204).end()
+    await returnedBlog.remove()
+    res.status(204).end()
   }
 })
 
