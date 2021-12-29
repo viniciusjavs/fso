@@ -7,9 +7,13 @@ const MONGODB_PASS = process.env.NODE_ENV === 'test'
 const MONGODB_URI = process.env.NODE_ENV === 'test'
   ? process.env.TEST_MONGODB_URI
   : process.env.MONGODB_URI
+const API_SECRET = process.env.NODE_ENV === 'test'
+  ? process.env.TEST_API_SECRET
+  : process.env.API_SECRET
 
 module.exports = {
   PORT,
   MONGODB_PASS,
-  MONGODB_URI
+  MONGODB_URI,
+  API_SECRET
 }

@@ -13,6 +13,12 @@ const errorHandler = (error, _req, res, next) => {
   else if (error.name === 'NotFoundError') {
     return res.status(404).send({ error: error.message })
   }
+  else if (error.name === 'JsonWebTokenError') {
+    return res.status(401).send({ error: 'invalid token' })
+  }
+  else if (error.name === 'TokenExpiredError') {
+    return res.status(401).send({ error: 'token expired' })
+  }
   next(error)
 }
 
