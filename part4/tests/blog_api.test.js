@@ -4,19 +4,31 @@ const helper = require('./test_helper')
 const app = require('../app')
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const sinon = require('sinon')
 
 const api = supertest(app)
 
-let testUserId
+let apiTestKey, testUserId
 
 beforeAll(async () => {
   await User.deleteMany({})
+  helper.initialUsers[0].passwordHash = await helper.genHash('rootPass')
   await User.insertMany(helper.initialUsers)
 
   const user = await User.findOne({ username: 'root' })
 
   testUserId = user._id.toString()
 
+  const result = await api
+    .post('/api/login')
+    .send({ username: 'root', password: 'rootPass' })
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  expect(result.body.username).toBe('root')
+  expect(typeof result.body.token).toBe('string')
+
+  apiTestKey = result.body.token
 })
 
 beforeEach(async () => {
@@ -95,6 +107,7 @@ describe('addition of a new blog', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${apiTestKey}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -116,6 +129,7 @@ describe('addition of a new blog', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${apiTestKey}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -136,6 +150,7 @@ describe('addition of a new blog', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${apiTestKey}`)
       .send(newBlog)
       .expect(400)
       .expect('Content-Type', /application\/json/)
@@ -153,6 +168,7 @@ describe('addition of a new blog', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${apiTestKey}`)
       .send(newBlog)
       .expect(400)
       .expect('Content-Type', /application\/json/)
@@ -161,6 +177,67 @@ describe('addition of a new blog', () => {
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
   })
 
+  test('fails with statuscode 401 if Auth is not set', async () => {
+    const newBlog = {
+      title: 'Canonical string reduction',
+      author: 'Edsger W. Dijkstra',
+      userId: testUserId
+    }
+
+    const res = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+
+    expect(res.body.error).toContain('token missing or invalid')
+    const blogsAtEnd = await helper.blogsInDB()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+  })
+
+  test('fails with statuscode 401 if token is invalid', async () => {
+    const newBlog = {
+      title: 'Canonical string reduction',
+      author: 'Edsger W. Dijkstra',
+      userId: testUserId
+    }
+
+    const res = await api
+      .post('/api/blogs')
+      .set('Authorization', 'Bearer 123')
+      .send(newBlog)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+
+    expect(res.body.error).toContain('invalid token')
+    const blogsAtEnd = await helper.blogsInDB()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+  })
+
+  const clock = sinon.useFakeTimers()
+  test('fails with statuscode 401 if token is expired', async () => {
+    const newBlog = {
+      title: 'Canonical string reduction',
+      author: 'Edsger W. Dijkstra',
+      url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+      userId: testUserId
+    }
+
+    clock.tick(3601000)
+
+    const res = await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${apiTestKey}`)
+      .send(newBlog)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+
+    expect(res.body.error).toContain('token expired')
+    const blogsAtEnd = await helper.blogsInDB()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+
+    clock.restore()
+  })
 })
 
 describe('updating a blog', () => {
