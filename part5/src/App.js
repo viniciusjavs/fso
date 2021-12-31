@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import BlogList from './components/BlogList'
 import Notification from './components/Notification'
+import Create from './components/Create'
 import Login from './components/Login'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -11,6 +12,9 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState(null)
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
 
   const notificationTimeout = (time = 5000) => {
     setTimeout(() => {
@@ -72,11 +76,40 @@ const App = () => {
     setUser(null)
   }
 
+  const clearCreateForm = () => {
+    setTitle('')
+    setAuthor('')
+    setUrl('')
+  }
+
+  const handleCreate = async (event) => {
+    event.preventDefault()
+    try {
+      const returnedBlog = await blogService.create({
+          title, author, url, userId: user.id
+      })
+      setBlogs(blogs.concat(returnedBlog))
+      clearCreateForm()
+      success('Blog created with success')
+    } catch (exception) {
+      error(`Blog creating failed: ${exception.response.data.error}`)
+    }
+  }
+
   return (
     <div>
       <Notification notification={notification} />
       {user
-        ? <BlogList blogs={blogs} name={user.name || user.username} handleLogout={handleLogout} />
+        ? <div>
+            <h2>Blogs</h2>
+            <p>
+              {user.name || user.username} logged in
+              <button type="button" onClick={handleLogout}>logout</button>
+            </p>
+            <Create handleCreate={handleCreate} title={title} author={author} url={url}
+              setTitle={setTitle} setAuthor={setAuthor} setUrl={setUrl} />
+            <BlogList blogs={blogs} />
+          </div>
         : <Login handleLogin={handleLogin}
             username={username} password={password}
             handleUsernameChange = {({ target }) => setUsername(target.value)} 
