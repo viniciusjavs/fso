@@ -36,15 +36,30 @@ const App = () => {
     fetchData()
   }, [])
 
-  const clearLoginForm = () => setUsername('') && setPassword('')
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      blogService.setToken(user.token)
+      setUser(user)
+    }
+  }, [])
+
+  const clearLoginForm = () => {
+    setUsername('')
+    setPassword('')
+  }
 
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
-        const user = await loginService.login({
+      const user = await loginService.login({
         username, password
       })
       blogService.setToken(user.token)
+      window.localStorage.setItem(
+        'loggedBlogappUser', JSON.stringify(user)
+      )
       setUser(user)
       clearLoginForm()
     } catch (exception) {
@@ -52,11 +67,16 @@ const App = () => {
     }
   }
 
+  const handleLogout = () => {
+    window.localStorage.removeItem('loggedBlogappUser')
+    setUser(null)
+  }
+
   return (
     <div>
       <Notification notification={notification} />
       {user
-        ? <BlogList blogs={blogs} name={user.name || user.username} />
+        ? <BlogList blogs={blogs} name={user.name || user.username} handleLogout={handleLogout} />
         : <Login handleLogin={handleLogin}
             username={username} password={password}
             handleUsernameChange = {({ target }) => setUsername(target.value)} 
