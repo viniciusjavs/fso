@@ -90,7 +90,7 @@ const App = () => {
       })
       setBlogs(blogs.concat(returnedBlog))
       clearCreateForm()
-      success('Blog created with success')
+      success(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
     } catch (exception) {
       error(`Blog creating failed: ${exception.response.data.error}`)
     }
