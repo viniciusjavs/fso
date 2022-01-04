@@ -1,9 +1,28 @@
-import React from 'react'
+import React, {useState} from 'react'
 
-const Create = ({ handleCreate, title, author, url, setTitle, setAuthor, setUrl }) => (
+const Create = ({ handleCreate }) => {
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
+
+  const clearCreateForm = () => {
+    setTitle('')
+    setAuthor('')
+    setUrl('')
+  }
+
+  const addBlog = (event) => {
+    event.preventDefault()
+    handleCreate({
+        title, author, url
+    })
+    clearCreateForm()
+  }
+
+  return (
   <>
   <h2>Create new</h2>
-  <form onSubmit={handleCreate}>
+  <form onSubmit={addBlog}>
     <div>
       <label htmlFor="title">title </label>
       <input
@@ -31,6 +50,6 @@ const Create = ({ handleCreate, title, author, url, setTitle, setAuthor, setUrl 
     <button type="submit">save</button>
   </form>
   </>
-)
+)}
 
 export default Create

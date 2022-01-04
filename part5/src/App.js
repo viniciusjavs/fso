@@ -1,20 +1,17 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import BlogList from './components/BlogList'
 import Notification from './components/Notification'
 import Create from './components/Create'
 import Login from './components/Login'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState(null)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+  const blogFormRef = useRef()
 
   const notificationTimeout = (time = 5000) => {
     setTimeout(() => {
@@ -49,23 +46,14 @@ const App = () => {
     }
   }, [])
 
-  const clearLoginForm = () => {
-    setUsername('')
-    setPassword('')
-  }
-
-  const handleLogin = async (event) => {
-    event.preventDefault()
+  const handleLogin = async (credentials) => {
     try {
-      const user = await loginService.login({
-        username, password
-      })
+      const user = await loginService.login(credentials)
       blogService.setToken(user.token)
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
       )
       setUser(user)
-      clearLoginForm()
     } catch (exception) {
       error(`Wrong credentials: ${exception.response.data.error}`)
     }
@@ -76,20 +64,12 @@ const App = () => {
     setUser(null)
   }
 
-  const clearCreateForm = () => {
-    setTitle('')
-    setAuthor('')
-    setUrl('')
-  }
-
-  const handleCreate = async (event) => {
-    event.preventDefault()
+  const handleCreate = async blogObj => {
+    blogObj.userId = user && user.id
     try {
-      const returnedBlog = await blogService.create({
-          title, author, url, userId: user.id
-      })
+      const returnedBlog = await blogService.create(blogObj)
       setBlogs(blogs.concat(returnedBlog))
-      clearCreateForm()
+      blogFormRef.current.toggleVisibility()
       success(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
     } catch (exception) {
       error(`Blog creating failed: ${exception.response.data.error}`)
@@ -106,14 +86,15 @@ const App = () => {
               {user.name || user.username} logged in
               <button type="button" onClick={handleLogout}>logout</button>
             </p>
-            <Create handleCreate={handleCreate} title={title} author={author} url={url}
-              setTitle={setTitle} setAuthor={setAuthor} setUrl={setUrl} />
+            <Togglable buttonLabel="new blog" ref={blogFormRef}>
+              <Create handleCreate={handleCreate} />
+            </Togglable>
             <BlogList blogs={blogs} />
           </div>
-        : <Login handleLogin={handleLogin}
-            username={username} password={password}
-            handleUsernameChange = {({ target }) => setUsername(target.value)} 
-            handlePasswordChange = {({ target }) => setPassword(target.value)} />}
+        : <Togglable buttonLabel="log in">
+            <Login handleLogin={handleLogin} />
+          </Togglable>
+        }
     </div>
   )
 }
