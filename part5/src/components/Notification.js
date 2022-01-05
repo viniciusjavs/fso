@@ -3,7 +3,7 @@ const Notification = ({ notification }) => {
   if (!notification) {
     return null
   }
-  
+
   let style = {
     color: 'red',
     background: 'lightgrey',
@@ -21,7 +21,7 @@ const Notification = ({ notification }) => {
   return (
     <div style={style}>
       {notification.message}
-    </div>  
+    </div>
   )
 }
 

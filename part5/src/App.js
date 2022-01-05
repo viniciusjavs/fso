@@ -16,16 +16,16 @@ const App = () => {
   const notificationTimeout = (time = 5000) => {
     setTimeout(() => {
       setNotification(null)
-    }, time);
+    }, time)
   }
 
   const success = (message) => {
-    setNotification({message, success: true})
+    setNotification({ message, success: true })
     notificationTimeout()
   }
 
   const error = (message) => {
-    setNotification({message, success: false})
+    setNotification({ message, success: false })
     notificationTimeout()
   }
 
@@ -115,20 +115,20 @@ const App = () => {
       <Notification notification={notification} />
       {user
         ? <div>
-            <h2>Blogs</h2>
-            <p>
-              {user.name || user.username} logged in
-              <button type="button" onClick={handleLogout}>logout</button>
-            </p>
-            <Togglable buttonLabel="new blog" ref={blogFormRef}>
-              <Create handleCreate={handleCreate} />
-            </Togglable>
-            <BlogList blogs={blogs} handleUpdate={handleUpdate} handleRemove={handleRemove} />
-          </div>
-        : <Togglable buttonLabel="log in">
-            <Login handleLogin={handleLogin} />
+          <h2>Blogs</h2>
+          <p>
+            {user.name || user.username} logged in
+            <button type="button" onClick={handleLogout}>logout</button>
+          </p>
+          <Togglable buttonLabel="new blog" ref={blogFormRef}>
+            <Create handleCreate={handleCreate} />
           </Togglable>
-        }
+          <BlogList blogs={blogs} handleUpdate={handleUpdate} handleRemove={handleRemove} />
+        </div>
+        : <Togglable buttonLabel="log in">
+          <Login handleLogin={handleLogin} />
+        </Togglable>
+      }
     </div>
   )
 }
