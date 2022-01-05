@@ -1,4 +1,5 @@
 import React, {useState} from 'react'
+import PropTypes from 'prop-types'
 
 const Create = ({ handleCreate }) => {
   const [title, setTitle] = useState('')
@@ -51,5 +52,9 @@ const Create = ({ handleCreate }) => {
   </form>
   </>
 )}
+
+Create.protoTypes = {
+  handleCreate: PropTypes.func.isRequired
+}
 
 export default Create
