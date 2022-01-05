@@ -29,10 +29,12 @@ const App = () => {
     notificationTimeout()
   }
 
+  const sortPred = (a, b) => b.likes - a.likes
+
   useEffect(() => {
     const fetchData = async () => {
       const blogs = await blogService.getAll()
-      setBlogs(blogs)
+      setBlogs(blogs.sort(sortPred))
     }
     fetchData()
   }, [])
@@ -71,6 +73,7 @@ const App = () => {
         blogs
           .filter(b => b.id !== blog.id)
           .concat(blog)
+          .sort(sortPred)
       )
       success(`blog ${returnedBlog.title} updated with success`)
     }
@@ -83,7 +86,11 @@ const App = () => {
     blogObj.userId = user && user.id
     try {
       const returnedBlog = await blogService.create(blogObj)
-      setBlogs(blogs.concat(returnedBlog))
+      setBlogs(
+        blogs
+          .concat(returnedBlog)
+          .sort(sortPred)
+      )
       blogFormRef.current.toggleVisibility()
       success(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
     } catch (exception) {
