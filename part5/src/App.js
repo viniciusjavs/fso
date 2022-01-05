@@ -82,6 +82,18 @@ const App = () => {
     }
   }
 
+  const handleRemove = async (id) => {
+    try {
+      await blogService.remove(id)
+      setBlogs(
+        blogs
+          .filter(b => b.id !== id)
+      )
+    } catch (exception) {
+      error(`Blog remove failed: ${exception.response.data.error}`)
+    }
+  }
+
   const handleCreate = async blogObj => {
     blogObj.userId = user && user.id
     try {
@@ -111,7 +123,7 @@ const App = () => {
             <Togglable buttonLabel="new blog" ref={blogFormRef}>
               <Create handleCreate={handleCreate} />
             </Togglable>
-            <BlogList blogs={blogs} handleUpdate={handleUpdate} />
+            <BlogList blogs={blogs} handleUpdate={handleUpdate} handleRemove={handleRemove} />
           </div>
         : <Togglable buttonLabel="log in">
             <Login handleLogin={handleLogin} />
