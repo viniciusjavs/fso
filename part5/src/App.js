@@ -64,6 +64,21 @@ const App = () => {
     setUser(null)
   }
 
+  const handleUpdate = async (blog) => {
+    try {
+      const returnedBlog = await blogService.update(blog.id, blog)
+      setBlogs(
+        blogs
+          .filter(b => b.id !== blog.id)
+          .concat(blog)
+      )
+      success(`blog ${returnedBlog.title} updated with success`)
+    }
+    catch (exception) {
+      error(`Blog update failed: ${exception.response.data.error}`)
+    }
+  }
+
   const handleCreate = async blogObj => {
     blogObj.userId = user && user.id
     try {
@@ -89,7 +104,7 @@ const App = () => {
             <Togglable buttonLabel="new blog" ref={blogFormRef}>
               <Create handleCreate={handleCreate} />
             </Togglable>
-            <BlogList blogs={blogs} />
+            <BlogList blogs={blogs} handleUpdate={handleUpdate} />
           </div>
         : <Togglable buttonLabel="log in">
             <Login handleLogin={handleLogin} />
