@@ -47,4 +47,16 @@ describe('<Blog />', () => {
       'display: none'
     )
   })
+
+  test('ensures the like button works multiple times', () => {
+    const button = component.container.querySelector('button')
+    fireEvent.click(button)
+
+    const like = component.getByText('like')
+    for (let i = 0; i < 2; ++i) {
+      fireEvent.click(like)
+    }
+
+    expect(mockHandler).toHaveBeenCalledTimes(2)
+  })
 })
