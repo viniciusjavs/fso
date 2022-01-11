@@ -38,4 +38,20 @@ describe('Blog app', function () {
             cy.get('.notification').should('not.contain', 'Superuser logged in')
 	})
     })
+
+    describe('when logged in', function () {
+        beforeEach(function () {
+            cy.login({username: 'root', password: 'rootPass'})
+        })
+
+        it('a blog can be created', function () {
+            cy.contains('new blog').click()
+            cy.get('#title').type('a title created by cypress')
+            cy.get('#author').type('an author created by cypress')
+            cy.get('#url').type('an url created by cypress')
+            cy.contains('save').click()
+
+            cy.contains('a title created by cypress')
+        })
+    })
 })
