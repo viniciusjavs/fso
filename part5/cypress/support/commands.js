@@ -56,3 +56,18 @@ Cypress.Commands.add('likeBlog', (title, likes = 1) => {
         cy.get('@theBlog').should('contain', i + 1)
     }
 })
+
+Cypress.Commands.add('deleteBlog', title => {
+    cy.contains(title)
+        .parent()
+        .parent()
+        .as('theBlog')
+    cy.get('@theBlog').contains('view').click()
+    cy.get('@theBlog').contains('remove').click()
+})
+
+Cypress.Commands.add('createUser', ({ name, username, password }) => {
+    cy.request('POST', 'http://localhost:3001/api/users/', {
+        name, username, password
+    })
+})

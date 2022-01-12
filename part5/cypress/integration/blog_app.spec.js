@@ -1,12 +1,11 @@
 describe('Blog app', function () {
     beforeEach(function () {
         cy.request('POST', 'http://localhost:3001/api/testing/reset')
-        const user = {
+        cy.createUser({
             name: "Superuser",
             username: "root",
             password: "rootPass"
-        }
-        cy.request('POST', 'http://localhost:3001/api/users/', user)
+        })
         cy.visit('http://localhost:3000')
     })
 
@@ -69,22 +68,12 @@ describe('Blog app', function () {
             })
 
             it('one of those can be liked', function () {
-                cy.contains('another title created by cypress')
-                    .parent()
-                    .parent()
-                    .as('theBlog')
-                cy.get('@theBlog').contains('view').click()
-                cy.get('@theBlog').contains('like').click()
-                cy.get('@theBlog').should('contain', '1')
+                cy.likeBlog('another title created by cypress')
+                cy.contains(1).contains('like')
             })
 
             it('one of those can be deleted', function () {
-                cy.contains('another title created by cypress')
-                    .parent()
-                    .parent()
-                    .as('theBlog')
-                cy.get('@theBlog').contains('view').click()
-                cy.get('@theBlog').contains('remove').click()
+                cy.deleteBlog('another title created by cypress')
                 cy.contains('another title created by cypress')
                     .should('not.exist')
             })
@@ -101,9 +90,10 @@ describe('Blog app', function () {
                     cy.likeBlog('one more title created by cypress', 3)
                 })
                 it('blogs are ordered according to likes', function() {
-                    ['a title created by cypress',
+                    const blogTitles = ['a title created by cypress',
                     'another title created by cypress',
-                    'one more title created by cypress'].reverse().forEach((el, i) => {
+                    'one more title created by cypress']
+                    blogTitles.reverse().forEach((el, i) => {
                         cy.get(`:nth-child(${i + 1}) > .full-blog > :nth-child(1)`)
                         .contains(el)
                     });
@@ -119,12 +109,11 @@ describe('Blog app', function () {
                     author: 'an author created by cypress',
                     url: 'an url created by cypress'
                 })
-                const user = {
+                cy.createUser({
                     name: "User",
                     username: "user",
                     password: "userPass"
-                }
-                cy.request('POST', 'http://localhost:3001/api/users/', user)
+                })
                 cy.login({username: 'user', password: 'userPass'})
                 cy.createBlog({
                     title: 'another title created by cypress',
@@ -134,12 +123,7 @@ describe('Blog app', function () {
             })
 
             it('a user cannot delete a blog from another user', function () {
-                cy.contains('a title created by cypress')
-                    .parent()
-                    .parent()
-                    .as('theBlog')
-                cy.get('@theBlog').contains('view').click()
-                cy.get('@theBlog').contains('remove').click()
+                cy.deleteBlog('a title created by cypress')
                 cy.contains('a title created by cypress')
             })
         })
