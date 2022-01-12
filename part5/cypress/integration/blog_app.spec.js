@@ -77,6 +77,49 @@ describe('Blog app', function () {
                 cy.get('@theBlog').contains('like').click()
                 cy.get('@theBlog').should('contain', '1')
             })
+
+            it('one of those can be deleted', function () {
+                cy.contains('another title created by cypress')
+                    .parent()
+                    .parent()
+                    .as('theBlog')
+                cy.get('@theBlog').contains('view').click()
+                cy.get('@theBlog').contains('remove').click()
+                cy.contains('another title created by cypress')
+                    .should('not.exist')
+            })
+        })
+
+        describe('and blogs from multiple users exist', function() {
+            beforeEach(function() {
+                cy.createBlog({
+                    title: 'a title created by cypress',
+                    author: 'an author created by cypress',
+                    url: 'an url created by cypress'
+                })
+                const user = {
+                    name: "User",
+                    username: "user",
+                    password: "userPass"
+                }
+                cy.request('POST', 'http://localhost:3001/api/users/', user)
+                cy.login({username: 'user', password: 'userPass'})
+                cy.createBlog({
+                    title: 'another title created by cypress',
+                    author: 'an author created by cypress',
+                    url: 'an url created by cypress'
+                })
+            })
+
+            it('a user cannot delete a blog from another user', function () {
+                cy.contains('a title created by cypress')
+                    .parent()
+                    .parent()
+                    .as('theBlog')
+                cy.get('@theBlog').contains('view').click()
+                cy.get('@theBlog').contains('remove').click()
+                cy.contains('a title created by cypress')
+            })
         })
     })
 })
