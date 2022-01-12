@@ -44,3 +44,15 @@ Cypress.Commands.add('createBlog', ({ title, author, url }) => {
     })
     cy.visit('http://localhost:3000')
 })
+
+Cypress.Commands.add('likeBlog', (title, likes = 1) => {
+    cy.contains(title)
+        .parent()
+        .parent()
+        .as('theBlog')
+    cy.get('@theBlog').contains('view').click()
+    for (let i = 0; i < likes; ++i) {
+        cy.get('@theBlog').contains('like').click()
+        cy.get('@theBlog').should('contain', i + 1)
+    }
+})

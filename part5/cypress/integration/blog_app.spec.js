@@ -88,6 +88,28 @@ describe('Blog app', function () {
                 cy.contains('another title created by cypress')
                     .should('not.exist')
             })
+
+            describe('and multiple blogs are liked', function () {
+                beforeEach(function() {
+                    cy.createBlog({
+                        title: 'one more title created by cypress',
+                        author: 'an author created by cypress',
+                        url: 'an url created by cypress'
+                    })
+                    cy.likeBlog('a title created by cypress')
+                    cy.likeBlog('another title created by cypress', 2)
+                    cy.likeBlog('one more title created by cypress', 3)
+                })
+                it('blogs are ordered according to likes', function() {
+                    ['a title created by cypress',
+                    'another title created by cypress',
+                    'one more title created by cypress'].reverse().forEach((el, i) => {
+                        cy.get(`:nth-child(${i + 1}) > .full-blog > :nth-child(1)`)
+                        .contains(el)
+                    });
+                })
+
+            })
         })
 
         describe('and blogs from multiple users exist', function() {
