@@ -25,7 +25,9 @@ const reducer = (state = initialState, action) => {
 
   switch(action.type) {
     case 'VOTE':
-      return state.map(a => a.id !== action.data.id ? a : {...a, votes: a.votes + 1})
+      return state
+                .map(a => a.id !== action.data.id ? a : {...a, votes: a.votes + 1})
+                .sort((a, b) => b.votes - a.votes)
     case 'NEW_ANECDOTE':
       return [...state, action.data]
   }
