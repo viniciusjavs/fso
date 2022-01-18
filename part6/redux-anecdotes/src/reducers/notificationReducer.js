@@ -4,16 +4,23 @@
   
     switch(action.type) {
       case 'SET_NOTIFICATION':
-        return state.notification
+        return action.notification
       default:
         return state
     }
   }
   
-  export const notificationChange = notification => {
+  export const changeNotification = notification => {
     return {
       type: 'SET_NOTIFICATION',
       notification
+    }
+  }
+
+  export const clearNotification = () => {
+    return {
+      type: 'SET_NOTIFICATION',
+      notification: ''
     }
   }
   
