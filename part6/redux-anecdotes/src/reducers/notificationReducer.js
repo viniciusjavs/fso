@@ -17,13 +17,16 @@
     }
   }
 
+  let notificationId
+
   export const setNotification = (notification, sec = 5) => {
     return async dispatch => {
       dispatch({
         type: 'SET_NOTIFICATION',
         notification
       })
-      setTimeout(() => {
+      clearTimeout(notificationId)
+      notificationId = setTimeout(() => {
         dispatch(clearNotification())
       }, sec * 1000)
     }
