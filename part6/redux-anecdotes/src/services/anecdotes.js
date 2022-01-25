@@ -13,4 +13,9 @@ const createNew = async (content) => {
     return res.data
 }
 
-export default { getAll, createNew }
+const updateAnecdote = async (anecdote) => {
+    const res = await axios.put(`${baseUrl}/${anecdote.id}`, anecdote)
+    return res.data
+}
+
+export default { getAll, createNew, updateAnecdote }
