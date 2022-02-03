@@ -85,21 +85,27 @@ const CreateNew = (props) => {
     })
   }
 
+  const inputAttr = field => {
+    const obj = {...field}
+    delete obj.reset
+    return obj
+  }
+
   return (
     <div>
       <h2>create a new anecdote</h2>
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input {...content} />
+          <input {...inputAttr(content)} />
         </div>
         <div>
           author
-          <input {...author} />
+          <input {...inputAttr(author)} />
         </div>
         <div>
           url for more info
-          <input {...info} />
+          <input {...inputAttr(info)} />
         </div>
         <button type="submit">create</button>
         <button type="reset" onClick={handleReset}>reset</button>
