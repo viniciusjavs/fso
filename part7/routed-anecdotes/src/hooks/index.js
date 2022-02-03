@@ -7,10 +7,15 @@ const useField = name => {
         setValue(event.target.value)
     }
 
+    const reset = () => {
+        setValue('')
+    }
+
     return {
         name,
         value,
-        onChange
+        onChange,
+        reset
     }
 }
 
