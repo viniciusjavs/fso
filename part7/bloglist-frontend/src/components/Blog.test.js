@@ -8,7 +8,7 @@ describe('<Blog />', () => {
     title: 'C++11: The Rule of the Big Five',
     author: 'Cline, Lomow, Girou',
     url: 'https://www.feabhas.com/sites/default/files/2016-06/Rule%20of%20the%20Big%20Five.pdf',
-    likes: 42
+    likes: 42,
   }
   let mockHandler
   let component

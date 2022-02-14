@@ -15,11 +15,11 @@ const App = () => {
   const blogFormRef = useRef()
   const dispatch = useDispatch()
 
-  const success = message => {
+  const success = (message) => {
     dispatch(setNotification(message))
   }
 
-  const error = message => {
+  const error = (message) => {
     dispatch(setNotification(message, false))
   }
 
@@ -46,9 +46,7 @@ const App = () => {
     try {
       const user = await loginService.login(credentials)
       blogService.setToken(user.token)
-      window.localStorage.setItem(
-        'loggedBlogappUser', JSON.stringify(user)
-      )
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
       setUser(user)
     } catch (exception) {
       error(`Wrong credentials: ${exception.response.data.error}`)
@@ -65,13 +63,12 @@ const App = () => {
       const returnedBlog = await blogService.update(blog.id, blog)
       setBlogs(
         blogs
-          .filter(b => b.id !== blog.id)
+          .filter((b) => b.id !== blog.id)
           .concat(blog)
           .sort(sortPred)
       )
       success(`blog ${returnedBlog.title} updated with success`)
-    }
-    catch (exception) {
+    } catch (exception) {
       error(`Blog update failed: ${exception.response.data.error}`)
     }
   }
@@ -79,26 +76,21 @@ const App = () => {
   const handleRemove = async (id) => {
     try {
       await blogService.remove(id)
-      setBlogs(
-        blogs
-          .filter(b => b.id !== id)
-      )
+      setBlogs(blogs.filter((b) => b.id !== id))
     } catch (exception) {
       error(`Blog remove failed: ${exception.response.data.error}`)
     }
   }
 
-  const handleCreate = async blogObj => {
+  const handleCreate = async (blogObj) => {
     blogObj.userId = user && user.id
     try {
       const returnedBlog = await blogService.create(blogObj)
-      setBlogs(
-        blogs
-          .concat(returnedBlog)
-          .sort(sortPred)
-      )
+      setBlogs(blogs.concat(returnedBlog).sort(sortPred))
       blogFormRef.current.toggleVisibility()
-      success(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
+      success(
+        `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
+      )
     } catch (exception) {
       error(`Blog creating failed: ${exception.response.data.error}`)
     }
@@ -107,22 +99,29 @@ const App = () => {
   return (
     <div>
       <Notification />
-      {user
-        ? <div>
+      {user ? (
+        <div>
           <h2>Blogs</h2>
           <p>
             {user.name || user.username} logged in
-            <button type="button" onClick={handleLogout}>logout</button>
+            <button type="button" onClick={handleLogout}>
+              logout
+            </button>
           </p>
           <Togglable buttonLabel="new blog" ref={blogFormRef}>
             <Create handleCreate={handleCreate} />
           </Togglable>
-          <BlogList blogs={blogs} handleUpdate={handleUpdate} handleRemove={handleRemove} />
+          <BlogList
+            blogs={blogs}
+            handleUpdate={handleUpdate}
+            handleRemove={handleRemove}
+          />
         </div>
-        : <Togglable buttonLabel="log in">
+      ) : (
+        <Togglable buttonLabel="log in">
           <Login handleLogin={handleLogin} />
         </Togglable>
-      }
+      )}
     </div>
   )
 }

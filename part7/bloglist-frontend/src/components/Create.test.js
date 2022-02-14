@@ -6,9 +6,7 @@ import Create from './Create'
 describe('<Create />', () => {
   const handleCreate = jest.fn()
 
-  const component = render(
-    <Create handleCreate={handleCreate} />
-  )
+  const component = render(<Create handleCreate={handleCreate} />)
 
   test('creating a new blog', () => {
     const newBlog = {
@@ -25,7 +23,7 @@ describe('<Create />', () => {
     const components = [title, author, url]
     components.forEach((element, key) => {
       fireEvent.change(element, {
-        target: { value: Object.values(newBlog)[key] }
+        target: { value: Object.values(newBlog)[key] },
       })
     })
 

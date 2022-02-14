@@ -15,9 +15,7 @@ describe('<Toggable />', () => {
   })
 
   test('renders its children', () => {
-    expect(
-      component.container.querySelector('.testDiv')
-    ).not.toBe(null)
+    expect(component.container.querySelector('.testDiv')).not.toBe(null)
   })
 
   test('at start the children is not displayed', () => {
@@ -43,5 +41,4 @@ describe('<Toggable />', () => {
     const div = component.container.querySelector('.togglableContent')
     expect(div).toHaveStyle('display: none')
   })
-
 })

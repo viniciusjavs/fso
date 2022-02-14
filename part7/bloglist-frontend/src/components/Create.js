@@ -15,7 +15,9 @@ const Create = ({ handleCreate }) => {
   const addBlog = (event) => {
     event.preventDefault()
     handleCreate({
-      title, author, url
+      title,
+      author,
+      url,
     })
     clearCreateForm()
   }
@@ -51,10 +53,11 @@ const Create = ({ handleCreate }) => {
         <button type="submit">save</button>
       </form>
     </>
-  )}
+  )
+}
 
 Create.protoTypes = {
-  handleCreate: PropTypes.func.isRequired
+  handleCreate: PropTypes.func.isRequired,
 }
 
 export default Create

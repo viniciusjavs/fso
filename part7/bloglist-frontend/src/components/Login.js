@@ -13,7 +13,8 @@ const Login = ({ handleLogin }) => {
   const login = (event) => {
     event.preventDefault()
     handleLogin({
-      username, password
+      username,
+      password,
     })
     clearLoginForm()
   }
@@ -42,14 +43,16 @@ const Login = ({ handleLogin }) => {
             onChange={({ target }) => setPassword(target.value)}
           />
         </div>
-        <button id="login-button" type="submit">login</button>
+        <button id="login-button" type="submit">
+          login
+        </button>
       </form>
     </>
   )
 }
 
 Login.propTypes = {
-  handleLogin: PropTypes.func.isRequired
+  handleLogin: PropTypes.func.isRequired,
 }
 
 export default Login

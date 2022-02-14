@@ -8,13 +8,13 @@ const notificationReducer = (state = null, action) => {
 const clearNotification = () => {
   return {
     type: 'SET_NOTIFICATION',
-    notification: null
+    notification: null,
   }
 }
 
 let notificationId
 
-const notificationTimeout = dispatch => {
+const notificationTimeout = (dispatch) => {
   return (time = 5000) => {
     clearTimeout(notificationId)
     notificationId = setTimeout(() => {
@@ -26,12 +26,12 @@ const notificationTimeout = dispatch => {
 const newNotification = (message, success) => {
   return {
     type: 'SET_NOTIFICATION',
-    notification: { message, success }
+    notification: { message, success },
   }
 }
 
 export const setNotification = (message, success = true) => {
-  return dispatch => {
+  return (dispatch) => {
     dispatch(newNotification(message, success))
     notificationTimeout(dispatch)()
   }

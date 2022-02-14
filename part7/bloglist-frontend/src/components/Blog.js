@@ -16,7 +16,7 @@ const Blog = ({ blog, handleUpdate, handleRemove }) => {
     paddingLeft: 2,
     border: 'solid',
     borderWidth: 1,
-    marginBottom: 5
+    marginBottom: 5,
   }
 
   const addLike = () => {
@@ -26,7 +26,7 @@ const Blog = ({ blog, handleUpdate, handleRemove }) => {
       url: blog.url,
       likes: blog.likes + 1,
       userId: typeof blog.userId === 'object' ? blog.userId.id : blog.userId,
-      id: blog.id
+      id: blog.id,
     })
   }
 
@@ -39,13 +39,22 @@ const Blog = ({ blog, handleUpdate, handleRemove }) => {
   return (
     <div style={blogStyle}>
       <div style={hideWhenVisible} className="basic-blog">
-        <div> {blog.title} <button onClick={toggleVisibility}>view</button> </div>
+        <div>
+          {' '}
+          {blog.title} <button onClick={toggleVisibility}>view</button>{' '}
+        </div>
         <div> {blog.author} </div>
       </div>
       <div style={showWhenVisible} className="full-blog">
-        <div> {blog.title} <button onClick={toggleVisibility}>hide</button> </div>
+        <div>
+          {' '}
+          {blog.title} <button onClick={toggleVisibility}>hide</button>{' '}
+        </div>
         <div> {blog.url} </div>
-        <div> {blog.likes} <button onClick={addLike}>like</button> </div>
+        <div>
+          {' '}
+          {blog.likes} <button onClick={addLike}>like</button>{' '}
+        </div>
         <div> {blog.author} </div>
         <button onClick={remove}>remove</button>
       </div>
@@ -56,7 +65,7 @@ const Blog = ({ blog, handleUpdate, handleRemove }) => {
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
   handleUpdate: PropTypes.func.isRequired,
-  handleRemove: PropTypes.func.isRequired
+  handleRemove: PropTypes.func.isRequired,
 }
 
 export default Blog
