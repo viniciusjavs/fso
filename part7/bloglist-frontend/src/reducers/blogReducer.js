@@ -4,17 +4,17 @@ const sortPred = (a, b) => b.likes - a.likes
 
 const blogReducer = (state = [], action) => {
   switch (action.type) {
-    case 'INIT_BLOGS':
-      return action.blogs
-    case 'NEW_BLOG':
-      return state.concat(action.blog).sort(sortPred)
-    case 'LIKE':
-      return state
-        .filter((b) => b.id !== action.blog.id)
-        .concat(action.blog)
-        .sort(sortPred)
-    case 'DEL':
-      return state.filter((b) => b.id !== action.id)
+  case 'INIT_BLOGS':
+    return action.blogs
+  case 'NEW_BLOG':
+    return state.concat(action.blog).sort(sortPred)
+  case 'LIKE':
+    return state
+      .filter((b) => b.id !== action.blog.id)
+      .concat(action.blog)
+      .sort(sortPred)
+  case 'DEL':
+    return state.filter((b) => b.id !== action.id)
   }
   return state
 }

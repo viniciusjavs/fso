@@ -1,10 +1,14 @@
 import React, { useState } from 'react'
-import PropTypes from 'prop-types'
+import { useDispatch, useSelector } from 'react-redux'
+import { setNotification } from '../reducers/notificationReducer'
+import { createBlog } from '../reducers/blogReducer'
 
-const Create = ({ handleCreate }) => {
+const Create = ({ togglable }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+
+  const dispatch = useDispatch()
 
   const clearCreateForm = () => {
     setTitle('')
@@ -12,13 +16,28 @@ const Create = ({ handleCreate }) => {
     setUrl('')
   }
 
+  const success = (message) => {
+    dispatch(setNotification(message))
+  }
+
+  const error = (message) => {
+    dispatch(setNotification(message, false))
+  }
+
+  const user = useSelector((state) => state.user)
+
   const addBlog = (event) => {
     event.preventDefault()
-    handleCreate({
-      title,
-      author,
-      url,
-    })
+    const blogObj = { title, author, url }
+    blogObj.userId = user && user.id
+    dispatch(createBlog(blogObj))
+      .then(() => {
+        togglable.current.toggleVisibility()
+        success(`a new blog ${blogObj.title} by ${blogObj.author} added`)
+      })
+      .catch((exception) => {
+        error(`Blog creating failed: ${exception.response.data}`)
+      })
     clearCreateForm()
   }
 
@@ -54,10 +73,6 @@ const Create = ({ handleCreate }) => {
       </form>
     </>
   )
-}
-
-Create.protoTypes = {
-  handleCreate: PropTypes.func.isRequired,
 }
 
 export default Create
