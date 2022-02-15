@@ -8,6 +8,13 @@ const blogReducer = (state = [], action) => {
       return action.blogs
     case 'NEW_BLOG':
       return state.concat(action.blog).sort(sortPred)
+    case 'LIKE':
+      return state
+        .filter((b) => b.id !== action.blog.id)
+        .concat(action.blog)
+        .sort(sortPred)
+    case 'DEL':
+      return state.filter((b) => b.id !== action.id)
   }
   return state
 }
@@ -28,6 +35,26 @@ export const createBlog = (newBlog) => {
     dispatch({
       type: 'NEW_BLOG',
       blog: returnedBlog,
+    })
+  }
+}
+
+export const likeBlog = (blog) => {
+  return async (dispatch) => {
+    const returnedBlog = await blogService.update(blog)
+    dispatch({
+      type: 'LIKE',
+      blog: returnedBlog,
+    })
+  }
+}
+
+export const delBlog = (id) => {
+  return async (dispatch) => {
+    await blogService.remove(id)
+    dispatch({
+      type: 'DEL',
+      id,
     })
   }
 }

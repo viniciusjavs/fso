@@ -11,7 +11,6 @@ import loginService from './services/login'
 import Togglable from './components/Togglable'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
   const blogFormRef = useRef()
   const dispatch = useDispatch()
@@ -23,8 +22,6 @@ const App = () => {
   const error = (message) => {
     dispatch(setNotification(message, false))
   }
-
-  const sortPred = (a, b) => b.likes - a.likes
 
   useEffect(() => {
     dispatch(initializeBlogs()).catch((e) => {
@@ -57,30 +54,6 @@ const App = () => {
     setUser(null)
   }
 
-  const handleUpdate = async (blog) => {
-    try {
-      const returnedBlog = await blogService.update(blog.id, blog)
-      setBlogs(
-        blogs
-          .filter((b) => b.id !== blog.id)
-          .concat(blog)
-          .sort(sortPred)
-      )
-      success(`blog ${returnedBlog.title} updated with success`)
-    } catch (exception) {
-      error(`Blog update failed: ${exception.response.data.error}`)
-    }
-  }
-
-  const handleRemove = async (id) => {
-    try {
-      await blogService.remove(id)
-      setBlogs(blogs.filter((b) => b.id !== id))
-    } catch (exception) {
-      error(`Blog remove failed: ${exception.response.data.error}`)
-    }
-  }
-
   const handleCreate = async (blogObj) => {
     blogObj.userId = user && user.id
     dispatch(createBlog(blogObj))
@@ -108,7 +81,7 @@ const App = () => {
           <Togglable buttonLabel="new blog" ref={blogFormRef}>
             <Create handleCreate={handleCreate} />
           </Togglable>
-          <BlogList handleUpdate={handleUpdate} handleRemove={handleRemove} />
+          <BlogList />
         </div>
       ) : (
         <Togglable buttonLabel="log in">

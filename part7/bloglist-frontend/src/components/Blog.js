@@ -1,8 +1,20 @@
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { likeBlog, delBlog } from '../reducers/blogReducer'
+import { setNotification } from '../reducers/notificationReducer'
 import PropTypes from 'prop-types'
 
-const Blog = ({ blog, handleUpdate, handleRemove }) => {
+const Blog = ({ blog }) => {
   const [visible, setVisible] = useState(false)
+  const dispatch = useDispatch()
+
+  const success = (message) => {
+    dispatch(setNotification(message))
+  }
+
+  const error = (message) => {
+    dispatch(setNotification(message, false))
+  }
 
   const toggleVisibility = () => {
     setVisible(!visible)
@@ -20,19 +32,26 @@ const Blog = ({ blog, handleUpdate, handleRemove }) => {
   }
 
   const addLike = () => {
-    handleUpdate({
-      title: blog.title,
-      author: blog.author,
-      url: blog.url,
-      likes: blog.likes + 1,
-      userId: typeof blog.userId === 'object' ? blog.userId.id : blog.userId,
-      id: blog.id,
-    })
+    dispatch(
+      likeBlog({
+        ...blog,
+        likes: blog.likes + 1,
+        userId: typeof blog.userId === 'object' ? blog.userId.id : blog.userId,
+      })
+    )
+      .then(() => {
+        success(`blog ${blog.title} updated with success`)
+      })
+      .catch((exception) => {
+        error(`Blog update failed: ${exception.response.data.error}`)
+      })
   }
 
   const remove = () => {
     if (window.confirm(`Remove ${blog.title} by ${blog.author}`)) {
-      handleRemove(blog.id)
+      dispatch(delBlog(blog.id)).catch((exception) => {
+        error(`Blog remove failed: ${exception.response.data.error}`)
+      })
     }
   }
 
@@ -64,8 +83,6 @@ const Blog = ({ blog, handleUpdate, handleRemove }) => {
 
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
-  handleUpdate: PropTypes.func.isRequired,
-  handleRemove: PropTypes.func.isRequired,
 }
 
 export default Blog
