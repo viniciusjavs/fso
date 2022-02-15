@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import { setNotification } from './reducers/notificationReducer'
+import { initializeBlogs, createBlog } from './reducers/blogReducer'
 import BlogList from './components/BlogList'
 import Notification from './components/Notification'
 import Create from './components/Create'
@@ -26,11 +27,9 @@ const App = () => {
   const sortPred = (a, b) => b.likes - a.likes
 
   useEffect(() => {
-    const fetchData = async () => {
-      const blogs = await blogService.getAll()
-      setBlogs(blogs.sort(sortPred))
-    }
-    fetchData()
+    dispatch(initializeBlogs()).catch((e) => {
+      console.log(e.response.data)
+    })
   }, [])
 
   useEffect(() => {
@@ -84,16 +83,14 @@ const App = () => {
 
   const handleCreate = async (blogObj) => {
     blogObj.userId = user && user.id
-    try {
-      const returnedBlog = await blogService.create(blogObj)
-      setBlogs(blogs.concat(returnedBlog).sort(sortPred))
-      blogFormRef.current.toggleVisibility()
-      success(
-        `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
-      )
-    } catch (exception) {
-      error(`Blog creating failed: ${exception.response.data.error}`)
-    }
+    dispatch(createBlog(blogObj))
+      .then(() => {
+        blogFormRef.current.toggleVisibility()
+        success(`a new blog ${blogObj.title} by ${blogObj.author} added`)
+      })
+      .catch((exception) => {
+        error(`Blog creating failed: ${exception.response.data}`)
+      })
   }
 
   return (
@@ -111,11 +108,7 @@ const App = () => {
           <Togglable buttonLabel="new blog" ref={blogFormRef}>
             <Create handleCreate={handleCreate} />
           </Togglable>
-          <BlogList
-            blogs={blogs}
-            handleUpdate={handleUpdate}
-            handleRemove={handleRemove}
-          />
+          <BlogList handleUpdate={handleUpdate} handleRemove={handleRemove} />
         </div>
       ) : (
         <Togglable buttonLabel="log in">
