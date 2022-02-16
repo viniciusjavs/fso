@@ -2,11 +2,13 @@ import React, { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { initializeBlogs } from './reducers/blogReducer'
 import { recoverLogin, logout } from './reducers/userReducer'
-import BlogList from './components/BlogList'
-import Notification from './components/Notification'
-import Create from './components/Create'
 import Login from './components/Login'
+import Notification from './components/Notification'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import BlogList from './components/BlogList'
+import Create from './components/Create'
 import Togglable from './components/Togglable'
+import Users from './components/Users'
 
 const App = () => {
   const createBlogRef = useRef()
@@ -33,10 +35,22 @@ const App = () => {
               logout
             </button>
           </p>
-          <Togglable buttonLabel="new blog" ref={createBlogRef}>
-            <Create togglable={createBlogRef} />
-          </Togglable>
-          <BlogList />
+          <Router>
+            <Routes>
+              <Route path="/users" element={<Users />} />
+              <Route
+                path="/"
+                element={
+                  <>
+                    <Togglable buttonLabel="new blog" ref={createBlogRef}>
+                      <Create togglable={createBlogRef} />
+                    </Togglable>
+                    <BlogList />
+                  </>
+                }
+              />
+            </Routes>
+          </Router>
         </div>
       ) : (
         <Togglable buttonLabel="log in">
