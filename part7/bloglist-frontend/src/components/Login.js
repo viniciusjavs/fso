@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { newLogin } from '../reducers/userReducer'
-import { setNotification } from '../reducers/notificationReducer'
+import { error } from '../reducers/notificationReducer'
 
 const Login = () => {
   const [username, setUsername] = useState('')
@@ -14,10 +14,6 @@ const Login = () => {
     setPassword('')
   }
 
-  const error = (message) => {
-    dispatch(setNotification(message, false))
-  }
-
   const login = (event) => {
     event.preventDefault()
     dispatch(
@@ -26,7 +22,7 @@ const Login = () => {
         password,
       })
     ).catch((exception) => {
-      error(`Wrong credentials: ${exception.response.data.error}`)
+      dispatch(error(`Wrong credentials: ${exception.response.data.error}`))
     })
     clearLoginForm()
   }

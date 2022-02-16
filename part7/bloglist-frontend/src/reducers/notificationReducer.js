@@ -30,11 +30,15 @@ const newNotification = (message, success) => {
   }
 }
 
-export const setNotification = (message, success = true) => {
+const setNotification = (message, success = true) => {
   return (dispatch) => {
     dispatch(newNotification(message, success))
     notificationTimeout(dispatch)()
   }
 }
+
+export const success = (message) => setNotification(message)
+
+export const error = (message) => setNotification(message, false)
 
 export default notificationReducer

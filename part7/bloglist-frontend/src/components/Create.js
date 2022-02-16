@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { setNotification } from '../reducers/notificationReducer'
+import { success, error } from '../reducers/notificationReducer'
 import { createBlog } from '../reducers/blogReducer'
 
 const Create = ({ togglable }) => {
@@ -16,14 +16,6 @@ const Create = ({ togglable }) => {
     setUrl('')
   }
 
-  const success = (message) => {
-    dispatch(setNotification(message))
-  }
-
-  const error = (message) => {
-    dispatch(setNotification(message, false))
-  }
-
   const user = useSelector((state) => state.user)
 
   const addBlog = (event) => {
@@ -33,10 +25,10 @@ const Create = ({ togglable }) => {
     dispatch(createBlog(blogObj))
       .then(() => {
         togglable.current.toggleVisibility()
-        success(`a new blog ${blogObj.title} by ${blogObj.author} added`)
+        dispatch(success(`a new blog ${blogObj.title} by ${blogObj.author} added`))
       })
       .catch((exception) => {
-        error(`Blog creating failed: ${exception.response.data}`)
+        dispatch(error(`Blog creating failed: ${exception.response.data}`))
       })
     clearCreateForm()
   }
