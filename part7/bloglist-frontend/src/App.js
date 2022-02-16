@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { initializeBlogs } from './reducers/blogReducer'
-import { recoverLogin, logout } from './reducers/userReducer'
+import { recoverLogin, logout } from './reducers/loginReducer'
+import { initializeUsers } from './reducers/userReducer'
 import Login from './components/Login'
 import Notification from './components/Notification'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
@@ -9,6 +10,7 @@ import BlogList from './components/BlogList'
 import Create from './components/Create'
 import Togglable from './components/Togglable'
 import Users from './components/Users'
+import User from './components/User'
 
 const App = () => {
   const createBlogRef = useRef()
@@ -19,9 +21,12 @@ const App = () => {
       console.log(e.response.data)
     })
     dispatch(recoverLogin())
+    dispatch(initializeUsers()).catch((e) => {
+      console.log(e.response.data)
+    })
   }, [])
 
-  const user = useSelector((state) => state.user)
+  const user = useSelector((state) => state.login)
 
   return (
     <div>
@@ -37,6 +42,7 @@ const App = () => {
           </p>
           <Router>
             <Routes>
+              <Route path="/users/:id" element={<User />} />
               <Route path="/users" element={<Users />} />
               <Route
                 path="/"

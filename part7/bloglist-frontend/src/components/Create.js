@@ -16,7 +16,7 @@ const Create = ({ togglable }) => {
     setUrl('')
   }
 
-  const user = useSelector((state) => state.user)
+  const user = useSelector((state) => state.login)
 
   const addBlog = (event) => {
     event.preventDefault()

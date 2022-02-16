@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { newLogin } from '../reducers/userReducer'
+import { newLogin } from '../reducers/loginReducer'
 import { error } from '../reducers/notificationReducer'
 
 const Login = () => {
