@@ -55,4 +55,13 @@ blogsRouter.get('/:id/comments', async ({ params: { id } }, res, next) => {
   blogFound && Comments ? res.json(Comments) : next(new NotFoundError('id not found'))
 })
 
+blogsRouter.post('/:id/comments', async ({ params: { id }, body }, res) => {
+  const blogFound = await Blog.exists({_id: id})
+  if (blogFound) {
+    const comment = new Comment({ ...body })
+    const savedComment = await comment.save()
+    res.status(201).json(savedComment)
+  }
+})
+
 module.exports = blogsRouter
