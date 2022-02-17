@@ -1,26 +1,18 @@
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import React from 'react'
+import { useParams } from 'react-router'
+import { useDispatch, useSelector } from 'react-redux'
 import { likeBlog, delBlog } from '../reducers/blogReducer'
 import { success, error } from '../reducers/notificationReducer'
-import PropTypes from 'prop-types'
+import { useNavigate } from 'react-router'
 
-const Blog = ({ blog }) => {
-  const [visible, setVisible] = useState(false)
+const Blog = () => {
   const dispatch = useDispatch()
+  const id = useParams().id
+  const blog = useSelector((state) => state.blogs.find((b) => b.id === id))
+  const navigate = useNavigate()
 
-  const toggleVisibility = () => {
-    setVisible(!visible)
-  }
-
-  const hideWhenVisible = { display: visible ? 'none' : '' }
-  const showWhenVisible = { display: visible ? '' : 'none' }
-
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
+  if (blog === undefined) {
+    return null
   }
 
   const addLike = () => {
@@ -41,40 +33,25 @@ const Blog = ({ blog }) => {
 
   const remove = () => {
     if (window.confirm(`Remove ${blog.title} by ${blog.author}`)) {
-      dispatch(delBlog(blog.id)).catch((exception) => {
-        dispatch(error(`Blog remove failed: ${exception.response.data.error}`))
-      })
+      dispatch(delBlog(blog.id))
+        .then(() => {
+          navigate('/')
+        })
+        .catch((exception) => {
+          dispatch(error(`Blog remove failed: ${exception.response.data.error}`))
+        })
     }
   }
 
   return (
-    <div style={blogStyle}>
-      <div style={hideWhenVisible} className="basic-blog">
-        <div>
-          {' '}
-          {blog.title} <button onClick={toggleVisibility}>view</button>{' '}
-        </div>
-        <div> {blog.author} </div>
-      </div>
-      <div style={showWhenVisible} className="full-blog">
-        <div>
-          {' '}
-          {blog.title} <button onClick={toggleVisibility}>hide</button>{' '}
-        </div>
-        <div> {blog.url} </div>
-        <div>
-          {' '}
-          {blog.likes} <button onClick={addLike}>like</button>{' '}
-        </div>
-        <div> {blog.author} </div>
-        <button onClick={remove}>remove</button>
-      </div>
+    <div>
+      <h2>{blog.title}</h2>
+      <a href={blog.url}>{blog.url}</a>
+      <div>{blog.likes} {blog.likes > 1 ? 'likes' : 'like'} <button onClick={addLike}>like</button></div>
+      <div>added by {blog.author}</div>
+      <button onClick={remove}>remove</button>
     </div>
   )
-}
-
-Blog.propTypes = {
-  blog: PropTypes.object.isRequired,
 }
 
 export default Blog

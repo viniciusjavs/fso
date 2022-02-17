@@ -11,6 +11,7 @@ import Create from './components/Create'
 import Togglable from './components/Togglable'
 import Users from './components/Users'
 import User from './components/User'
+import Blog from './components/Blog'
 
 const App = () => {
   const createBlogRef = useRef()
@@ -42,6 +43,7 @@ const App = () => {
           </p>
           <Router>
             <Routes>
+              <Route path="/blogs/:id" element={<Blog />} />
               <Route path="/users/:id" element={<User />} />
               <Route path="/users" element={<Users />} />
               <Route
