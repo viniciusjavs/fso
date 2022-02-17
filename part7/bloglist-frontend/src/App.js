@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { initializeBlogs } from './reducers/blogReducer'
 import { recoverLogin, logout } from './reducers/loginReducer'
 import { initializeUsers } from './reducers/userReducer'
-import Login from './components/Login'
+import LoginForm from './components/Login'
 import Notification from './components/Notification'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import BlogList from './components/BlogList'
@@ -29,8 +29,55 @@ const Menu = (props) => {
   )
 }
 
-const App = () => {
+const Login = () => {
+  const dispatch = useDispatch()
+  const user = useSelector((state) => state.login)
+
+  if (user) {
+    return (
+      <>
+        {user.name || user.username} logged in {' '}
+        <button type="button" onClick={() => dispatch(logout())}>
+          logout
+        </button>
+      </>
+    )
+  } else {
+    return (
+      <Togglable buttonLabel="log in">
+        <LoginForm />
+      </Togglable>
+    )
+  }
+}
+
+const Home = () => {
   const createBlogRef = useRef()
+  const user = useSelector((state) => state.login)
+  return (
+    <>
+      <h2>blog app</h2>
+      {user
+        ?
+        <Togglable buttonLabel="create new" ref={createBlogRef}>
+          <Create togglable={createBlogRef} />
+        </Togglable>
+        :
+        null
+      }
+      <BlogList />
+    </>
+  )
+}
+
+const Blogs = () => (
+  <>
+    <h2>Blogs</h2>
+    <BlogList />
+  </>
+)
+
+const App = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -43,48 +90,22 @@ const App = () => {
     })
   }, [])
 
-  const user = useSelector((state) => state.login)
-
   return (
-    <div>
+    <>
       <Notification />
-      {user ? (
-        <div>
-          <h2>Blogs</h2>
-          <Router>
-            <Menu>
-              <>
-                {user.name || user.username} logged in {' '}
-                <button type="button" onClick={() => dispatch(logout())}>
-                  logout
-                </button>
-              </>
-            </Menu>
-            <Routes>
-              <Route path="/users/:id" element={<User />} />
-              <Route path="/users" element={<Users />} />
-              <Route path="/blogs/:id" element={<Blog />} />
-              <Route path="/blogs" element={<BlogList />} />
-              <Route
-                path="/"
-                element={
-                  <>
-                    <Togglable buttonLabel="new blog" ref={createBlogRef}>
-                      <Create togglable={createBlogRef} />
-                    </Togglable>
-                    <BlogList />
-                  </>
-                }
-              />
-            </Routes>
-          </Router>
-        </div>
-      ) : (
-        <Togglable buttonLabel="log in">
+      <Router>
+        <Menu>
           <Login />
-        </Togglable>
-      )}
-    </div>
+        </Menu>
+        <Routes>
+          <Route path="/users/:id" element={<User />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/blogs/:id" element={<Blog />} />
+          <Route path="/blogs" element={<Blogs />} />
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </Router>
+    </>
   )
 }
 

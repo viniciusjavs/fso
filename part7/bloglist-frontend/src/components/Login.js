@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 import { newLogin } from '../reducers/loginReducer'
 import { error } from '../reducers/notificationReducer'
 
-const Login = () => {
+const LoginForm = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
@@ -59,4 +59,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default LoginForm
