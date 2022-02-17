@@ -1,6 +1,7 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const Comment = require('../models/comment')
 const NotFoundError = require('../utils/error')
 const { userExtractor } = require('../utils/middleware')
 
@@ -46,6 +47,12 @@ blogsRouter.delete('/:id', userExtractor, async({ params: { id }, userId }, res)
     await user.save()
     res.status(204).end()
   }
+})
+
+blogsRouter.get('/:id/comments', async ({ params: { id } }, res, next) => {
+  const blogFound = await Blog.exists({_id: id})
+  const Comments = await Comment.find({ blogId: id}, 'content')
+  blogFound && Comments ? res.json(Comments) : next(new NotFoundError('id not found'))
 })
 
 module.exports = blogsRouter
