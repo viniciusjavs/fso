@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { success, error } from '../reducers/notificationReducer'
 import { createBlog } from '../reducers/blogReducer'
+import { TextField, Button, Typography }  from '@material-ui/core'
 
 const Create = ({ togglable }) => {
   const [title, setTitle] = useState('')
@@ -35,33 +36,36 @@ const Create = ({ togglable }) => {
 
   return (
     <>
-      <h2>Create new</h2>
+      <Typography variant="h3">Create new</Typography>
       <form onSubmit={addBlog}>
         <div>
-          <label htmlFor="title">title </label>
-          <input
+          <TextField
+            label="Title"
             id="title"
             value={title}
             onChange={({ target }) => setTitle(target.value)}
+            required
           />
         </div>
         <div>
-          <label htmlFor="author">author </label>
-          <input
+          <TextField
+            label="Author"
             id="author"
             value={author}
             onChange={({ target }) => setAuthor(target.value)}
+            required
           />
         </div>
         <div>
-          <label htmlFor="url">url </label>
-          <input
+          <TextField
+            label="URL"
             id="url"
             value={url}
             onChange={({ target }) => setUrl(target.value)}
+            required
           />
         </div>
-        <button type="submit">save</button>
+        <Button type="submit">save</Button>
       </form>
     </>
   )

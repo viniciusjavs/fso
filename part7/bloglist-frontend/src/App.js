@@ -57,7 +57,7 @@ const Home = () => {
   const user = useSelector((state) => state.login)
   return (
     <>
-      <h2>blog app</h2>
+      <Typography variant="h2">Blog App</Typography>
       {user
         ?
         <Togglable buttonLabel="create new" ref={createBlogRef}>
@@ -73,7 +73,7 @@ const Home = () => {
 
 const Blogs = () => (
   <>
-    <h2>Blogs</h2>
+    <Typography variant="h2">Blogs</Typography>
     <BlogList />
   </>
 )

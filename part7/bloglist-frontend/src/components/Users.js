@@ -1,21 +1,21 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { TableContainer, Table, TableHead, TableBody, TableRow, TableCell } from '@material-ui/core'
+import { TableContainer, Table, TableHead, TableBody, TableRow, TableCell, Typography } from '@material-ui/core'
 
 const Users = () => {
   const users = useSelector((state) => state.users)
 
   return (
     <div>
-      <h2>Users</h2>
+      <Typography variant="h2">Users</Typography>
       <TableContainer>
         <Table>
           <TableHead>
             <TableRow>
               <TableCell />
               <TableCell>
-                <b>blogs created</b>
+                <Typography><b>blogs created</b></Typography>
               </TableCell>
             </TableRow>
           </TableHead>

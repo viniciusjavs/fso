@@ -1,4 +1,4 @@
-import { TextField, Button } from '@material-ui/core'
+import { TextField, Button, Typography } from '@material-ui/core'
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { newLogin } from '../reducers/loginReducer'
@@ -36,7 +36,7 @@ const Login = () => {
 
   return (
     <>
-      <h2>log in to application</h2>
+      <Typography variant="h2">Log In</Typography>
       <form onSubmit={login}>
         <div>
           <TextField
@@ -45,6 +45,7 @@ const Login = () => {
             name="Username"
             id="username"
             onChange={({ target }) => setUsername(target.value)}
+            required
           />
         </div>
         <div>
@@ -55,6 +56,7 @@ const Login = () => {
             name="Password"
             id="password"
             onChange={({ target }) => setPassword(target.value)}
+            required
           />
         </div>
         <Button variant="contained" color="primary" id="login-button" type="submit">

@@ -5,6 +5,7 @@ import { likeBlog, delBlog } from '../reducers/blogReducer'
 import { success, error } from '../reducers/notificationReducer'
 import { useNavigate } from 'react-router'
 import blogService from '../services/blogs'
+import { Typography, Link, Button, Grid, TextField, List, ListItem, ListItemText, ListItemIcon } from '@material-ui/core'
 
 const Blog = () => {
   const [comments, setComments] = useState([])
@@ -66,21 +67,30 @@ const Blog = () => {
   }
 
   return (
-    <div>
-      <h2>{blog.title}</h2>
-      <a href={blog.url}>{blog.url}</a>
-      <div>{blog.likes} {blog.likes > 1 ? 'likes' : 'like'} <button onClick={addLike}>like</button></div>
-      <div>added by {blog.author}</div>
-      <button onClick={remove}>remove</button>
-      <h3>comments</h3>
-      <input value={comment} onChange={({ target }) => { setComment(target.value) }} />
-      <button onClick={postComment}>add comment</button>
-      <ul>
+    <>
+      <Typography variant="h2">{blog.title}</Typography>
+      <Link href={blog.url}>{blog.url}</Link>
+      <Grid container>
+        <Typography>{blog.likes} {blog.likes > 1 ? 'likes' : 'like'}</Typography>
+        <Button onClick={addLike}>like</Button>
+      </Grid>
+      {blog.author === undefined
+        ? <></>
+        : <Typography>added by {blog.author}</Typography>
+      }
+      <Button onClick={remove}>remove</Button>
+      <Typography variant="h3">Comments</Typography>
+      <TextField value={comment} onChange={({ target }) => { setComment(target.value) }} />
+      <Button onClick={postComment}>add comment</Button>
+      <List>
         {comments.map((comment) => (
-          <li key={comment.id}>{comment.content}</li>
+          <ListItem key={comment.id}>
+            <ListItemIcon />
+            <ListItemText>{comment.content}</ListItemText>
+          </ListItem>
         ))}
-      </ul>
-    </div>
+      </List>
+    </>
   )
 }
 
