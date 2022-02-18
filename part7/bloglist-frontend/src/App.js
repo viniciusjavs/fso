@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { initializeBlogs } from './reducers/blogReducer'
 import { recoverLogin, logout } from './reducers/loginReducer'
 import { initializeUsers } from './reducers/userReducer'
-import LoginForm from './components/Login'
+import Login from './components/Login'
 import Notification from './components/Notification'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import BlogList from './components/BlogList'
@@ -12,43 +12,44 @@ import Togglable from './components/Togglable'
 import Users from './components/Users'
 import User from './components/User'
 import Blog from './components/Blog'
+import { Container, AppBar, Toolbar, Button, Typography, Grid }  from '@material-ui/core'
 
-const Menu = (props) => {
-
-  const padding = {
-    padding: 5
-  }
-
-  return (
-    <div style={{ background: 'lightgrey' }}>
-      <Link style={padding} to="/">home</Link>
-      <Link style={padding} to="/blogs">blogs</Link>
-      <Link style={padding} to="/users">users</Link>
-      {props.children}
-    </div>
-  )
-}
-
-const Login = () => {
+const Menu = () => {
   const dispatch = useDispatch()
   const user = useSelector((state) => state.login)
 
-  if (user) {
-    return (
-      <>
-        {user.name || user.username} logged in {' '}
-        <button type="button" onClick={() => dispatch(logout())}>
-          logout
-        </button>
-      </>
-    )
-  } else {
-    return (
-      <Togglable buttonLabel="log in">
-        <LoginForm />
-      </Togglable>
-    )
-  }
+  return (
+    <AppBar position="static">
+      <Toolbar>
+        <Button color="inherit">
+          <Link to="/">home</Link>
+        </Button>
+        <Button color="inherit">
+          <Link to="/blogs">blogs</Link>
+        </Button>
+        <Button color="inherit">
+          <Link to="/users">users</Link>
+        </Button>
+        {user
+          ?
+          <>
+            <Button color="inherit" onClick={() => dispatch(logout())}>
+              logout
+            </Button>
+            <Grid container justifyContent="flex-end">
+              <Typography>
+                {user.name || user.username} logged in
+              </Typography>
+            </Grid>
+          </>
+          :
+          <Button color="inherit">
+            <Link to="/login">login</Link>
+          </Button>
+        }
+      </Toolbar>
+    </AppBar>
+  )
 }
 
 const Home = () => {
@@ -91,21 +92,20 @@ const App = () => {
   }, [])
 
   return (
-    <>
+    <Container>
       <Notification />
       <Router>
-        <Menu>
-          <Login />
-        </Menu>
+        <Menu />
         <Routes>
           <Route path="/users/:id" element={<User />} />
           <Route path="/users" element={<Users />} />
           <Route path="/blogs/:id" element={<Blog />} />
           <Route path="/blogs" element={<Blogs />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/" element={<Home />} />
         </Routes>
       </Router>
-    </>
+    </Container>
   )
 }
 
