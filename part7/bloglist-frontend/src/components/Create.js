@@ -1,27 +1,28 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { success, error } from '../reducers/notificationReducer'
 import { createBlog } from '../reducers/blogReducer'
 import { TextField, Button, Typography }  from '@material-ui/core'
+import useField from '../hooks'
 
 const Create = ({ togglable }) => {
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
+  const title = useField('Title')
+  const author = useField('Author')
+  const url = useField('URL')
 
   const dispatch = useDispatch()
 
   const clearCreateForm = () => {
-    setTitle('')
-    setAuthor('')
-    setUrl('')
+    title.reset()
+    author.reset()
+    url.reset()
   }
 
   const user = useSelector((state) => state.login)
 
   const addBlog = (event) => {
     event.preventDefault()
-    const blogObj = { title, author, url }
+    const blogObj = { title: title.props.value, author: author.props.value, url: url.props.value }
     blogObj.userId = user && user.id
     dispatch(createBlog(blogObj))
       .then(() => {
@@ -40,28 +41,19 @@ const Create = ({ togglable }) => {
       <form onSubmit={addBlog}>
         <div>
           <TextField
-            label="Title"
-            id="title"
-            value={title}
-            onChange={({ target }) => setTitle(target.value)}
+            {...title.props}
             required
           />
         </div>
         <div>
           <TextField
-            label="Author"
-            id="author"
-            value={author}
-            onChange={({ target }) => setAuthor(target.value)}
+            {...author.props}
             required
           />
         </div>
         <div>
           <TextField
-            label="URL"
-            id="url"
-            value={url}
-            onChange={({ target }) => setUrl(target.value)}
+            {...url.props}
             required
           />
         </div>
