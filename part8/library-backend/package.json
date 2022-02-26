@@ -5,14 +5,17 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js"
+    "dev": "NODE_ENV=dev nodemon index.js",
+    "dev:load": "NODE_ENV=dev LOAD_DB=false nodemon load_db.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "apollo-server": "^3.6.3",
     "apollo-server-core": "^3.6.3",
-    "graphql": "^16.3.0"
+    "dotenv": "^16.0.0",
+    "graphql": "^16.3.0",
+    "mongoose": "^6.2.3"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
