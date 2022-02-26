@@ -10,8 +10,11 @@ const MONGODB_URI = process.env.NODE_ENV === 'dev'
 
 const LOAD_DB = process.env.LOAD_DB === 'true'
 
+const JWT_SECRET = process.env.JWT_SECRET
+
 module.exports = {
   MONGODB_PASS,
   MONGODB_URI,
-  LOAD_DB
+  LOAD_DB,
+  JWT_SECRET
 }
