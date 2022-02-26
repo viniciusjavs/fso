@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const { ApolloServer, gql } = require('apollo-server')
+const { ApolloServer, UserInputError, gql } = require('apollo-server')
 const config = require('./utils/config')
 const Book = require('./models/book')
 const Author = require('./models/author')
@@ -78,10 +78,22 @@ const resolvers = {
     addBook: async (_root, args) => {
       let author = await Author.findOne({ name: args.author })
       if (!author) {
-        author = await Author.create({ name: args.author })
+        try {
+          author = await Author.create({ name: args.author })
+        }
+        catch (error) {
+          throw new UserInputError(error.message, {
+            invalidArgs: args.author
+          })
+        }
       }
       return Book.create({ ...args, author: author._id })
         .then((book) => book.populate('author'))
+        .catch((error) => {
+          throw new UserInputError(error.message, {
+            invalidArgs: { ...args, author: author._id }
+          })
+        })
     },
     editAuthor: async (_root, { name, setBornTo }) =>
       Author.findOneAndUpdate({ name }, { born: setBornTo }, {
