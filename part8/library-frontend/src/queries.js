@@ -10,6 +10,7 @@ query {
     }
   }
 `
+
 export const ALL_BOOKS = gql`
 query {
     allBooks {
@@ -22,6 +23,14 @@ query {
       genres
     }
   }
+`
+
+export const ME = gql`
+query {
+  me {
+    favoriteGenre
+  }
+}
 `
 
 export const ADD_BOOK = gql`
