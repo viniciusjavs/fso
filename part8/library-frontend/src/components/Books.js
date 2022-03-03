@@ -3,23 +3,28 @@ import { useState } from "react"
 import { ALL_BOOKS } from "../queries"
 
 const Books = (props) => {
-  const { loading, data } = useQuery(ALL_BOOKS)
+  const allBooksQuery = useQuery(ALL_BOOKS)
   const [genre, setGenre] = useState('')
+  const booksByGenreQuery = useQuery(ALL_BOOKS, {
+    variables: { genre }
+  })
 
   if (!props.show) {
     return null
   }
 
-  if (loading) {
+  if (allBooksQuery.loading || booksByGenreQuery.loading) {
     return <div>loading...</div>
   }
 
-  const books = data.allBooks
+  const allBooks = allBooksQuery.data.allBooks
   const genres = new Set()
-  books.forEach(b => {
+  allBooks.forEach(b => {
     b.genres.length && genres.add(...b.genres)
   })
   genres.add('all genres')
+
+  const books = booksByGenreQuery.data.allBooks
 
   const setFilter = (genre) => {
     genre === 'all genres'
@@ -39,7 +44,6 @@ const Books = (props) => {
             <th>published</th>
           </tr>
           {books
-            .filter((b) => !genre || b.genres.includes(genre))
             .map((b) => (
             <tr key={b.id}>
               <td>{b.title}</td>
