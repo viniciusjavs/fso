@@ -32,7 +32,7 @@ const App = () => {
     <div>
       {token
       ?
-        <div>
+      <div>
         <button onClick={() => setPage('authors')}>authors</button>
         <button onClick={() => setPage('books')}>books</button>
         <button onClick={() => setPage('add')}>add book</button>

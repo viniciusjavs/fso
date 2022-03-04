@@ -1,11 +1,12 @@
-import { useQuery } from "@apollo/client"
+import { useQuery, useLazyQuery } from '@apollo/client'
 import { useState } from "react"
 import { ALL_BOOKS } from "../queries"
 
 const Books = (props) => {
   const allBooksQuery = useQuery(ALL_BOOKS)
   const [genre, setGenre] = useState('')
-  const booksByGenreQuery = useQuery(ALL_BOOKS, {
+  const [showAll, setShowAll] = useState(true)
+  const [booksByGenreQuery, booksByGenre] = useLazyQuery(ALL_BOOKS, {
     variables: { genre }
   })
 
@@ -13,29 +14,31 @@ const Books = (props) => {
     return null
   }
 
-  if (allBooksQuery.loading || booksByGenreQuery.loading) {
+  if (allBooksQuery.loading || (booksByGenre.called && booksByGenre.loading)) {
     return <div>loading...</div>
   }
 
-  const allBooks = allBooksQuery.data.allBooks
+  const { allBooks } = allBooksQuery.data
+
   const genres = new Set()
   allBooks.forEach(b => {
     b.genres.length && genres.add(...b.genres)
   })
-  genres.add('all genres')
 
-  const books = booksByGenreQuery.data.allBooks
+  const books = showAll
+    ? allBooks
+    : booksByGenre.data.allBooks
 
-  const setFilter = (genre) => {
-    genre === 'all genres'
-      ? setGenre('')
-      : setGenre(genre)
+  const showBooksByGenre = (genre) => {
+    setShowAll(false)
+    setGenre(genre)
+    !booksByGenre.called && booksByGenreQuery()
   }
 
   return (
     <div>
       <h2>books</h2>
-      {genre && <div>in genre <strong>{genre}</strong></div>}
+      {!showAll && <div>in genre <strong>{genre}</strong></div>}
       <table>
         <tbody>
           <tr>
@@ -57,10 +60,12 @@ const Books = (props) => {
         {[...genres].map((genre, idx) => (
           <button
             key={idx}
-            onClick={() => setFilter(genre)}
-          >{genre}
+            onClick={() => showBooksByGenre(genre)}
+          >
+            {genre}
           </button>
         ))}
+        <button onClick={() => setShowAll(true)}>all genres</button>
       </div>
     </div>
   )

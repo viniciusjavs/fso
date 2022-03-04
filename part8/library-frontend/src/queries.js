@@ -3,8 +3,8 @@ import { gql } from '@apollo/client'
 export const ALL_AUTHORS = gql`
 query {
     allAuthors {
-      name
       id
+      name
       born
       bookCount
     }
@@ -17,6 +17,7 @@ query allBooks($genre: String) {
     id
     title
     author {
+      id
       name
     }
     published
@@ -37,11 +38,13 @@ export const ADD_BOOK = gql`
 mutation addBook($title: String!, $author: String!, $published: Int!, $genres: [String!]!) {
     addBook(title: $title, author: $author, published: $published, genres: $genres) {
       id
+      title
       author {
+        id
         name
       }
       published
-      title
+      genres
     }
   }
 `
