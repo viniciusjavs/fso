@@ -12,9 +12,12 @@ const LOAD_DB = process.env.LOAD_DB === 'true'
 
 const JWT_SECRET = process.env.JWT_SECRET
 
+const PORT = 4000
+
 module.exports = {
   MONGODB_PASS,
   MONGODB_URI,
   LOAD_DB,
-  JWT_SECRET
+  JWT_SECRET,
+  PORT
 }

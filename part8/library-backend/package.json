@@ -6,17 +6,22 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "NODE_ENV=dev nodemon index.js",
-    "dev:load": "NODE_ENV=dev LOAD_DB=false nodemon load_db.js"
+    "dev:load": "NODE_ENV=dev LOAD_DB=false nodemon utils/load_db.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@graphql-tools/schema": "^8.3.2",
     "apollo-server": "^3.6.3",
     "apollo-server-core": "^3.6.3",
+    "apollo-server-express": "^3.6.3",
     "dotenv": "^16.0.0",
+    "express": "^4.17.3",
     "graphql": "^16.3.0",
+    "graphql-subscriptions": "^2.0.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.2.3"
+    "mongoose": "^6.2.3",
+    "subscriptions-transport-ws": "^0.11.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
