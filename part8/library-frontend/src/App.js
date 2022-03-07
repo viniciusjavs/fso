@@ -1,16 +1,30 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useSubscription } from '@apollo/client'
+import { useApolloClient, useSubscription } from '@apollo/client'
 import Authors from './components/Authors'
 import UpdateAuthor from './components/UpdateAuthor'
 import Books from './components/Books'
 import Recommend from './components/Recommend'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
-import { BOOK_ADDED } from './queries'
+import { ALL_BOOKS, BOOK_ADDED } from './queries'
+
+
+export const updateCache = (cache, query, book) => {
+  cache.updateQuery(query, ({ allBooks }) => {
+    if (allBooks) {
+      return {
+        allBooks: allBooks.find(({ id }) => id === book.id)
+          ? allBooks
+          : allBooks.concat(book)
+      }
+    }
+  })
+}
 
 const App = () => {
   const [page, setPage] = useState('authors')
   const [token, setToken] = useState(null)
+  const client = useApolloClient()
 
   const setTokenCb = useCallback((token) => {
     setToken(token)
@@ -27,7 +41,8 @@ const App = () => {
 
   useSubscription(BOOK_ADDED, {
     onSubscriptionData: ({ subscriptionData }) => {
-      window.alert(subscriptionData)
+      const { bookAdded } = subscriptionData.data
+      updateCache(client.cache, { query: ALL_BOOKS }, bookAdded)
     }
   })
 

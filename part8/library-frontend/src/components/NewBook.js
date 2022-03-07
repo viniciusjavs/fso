@@ -1,6 +1,7 @@
 import { useApolloClient, useMutation } from '@apollo/client'
 import { useEffect, useState } from 'react'
 import { ADD_BOOK, ALL_AUTHORS, ALL_BOOKS } from '../queries'
+import { updateCache } from '../App'
 
 const NewBook = (props) => {
   const [title, setTitle] = useState('')
@@ -14,25 +15,19 @@ const NewBook = (props) => {
   })
 
   useEffect(() => {
-    const updateCache = () => {
+    const updateQueries = () => {
       const addBook = bookAdded.data.addBook
       const { genres } = addBook
-      genres.map(genre => {
-        return {
-          query: ALL_BOOKS,
-          variables: { genre }
-        }
-      }).forEach(query => {
-        client.cache.updateQuery(query, ({ allBooks }) => {
+      genres
+        .map(genre => {
           return {
-            allBooks: allBooks.concat(addBook)
-          }
-        })
-      })
+            query: ALL_BOOKS,
+            variables: { genre }
+          }})
+        .forEach(query => updateCache(client.cache, query, addBook))
     }
-
     if (bookAdded.data) {
-      updateCache()
+      updateQueries()
     }
   }, [bookAdded.data])
 
