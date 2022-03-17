@@ -1,9 +1,13 @@
-const { Blog } = require('../models')
+const { Blog, User } = require('../models')
 
-const blogFinder = async (req, _res, next) => {
-    req.blog = await Blog.findByPk(req.params.id)
-    next()
-}
+const objFinder = (modelName) => 
+    async (req, _res, next) => {
+        req.foundObj = await modelName.findByPk(req.params.id)
+        next()
+    }
+
+const blogFinder = objFinder(Blog)
+const userFinder = objFinder(User)
 
 const errorHandler = (error, _req, res, next) => {
     console.error(error)
@@ -15,4 +19,4 @@ const errorHandler = (error, _req, res, next) => {
     next(error)
 }
 
-module.exports = { blogFinder, errorHandler }
+module.exports = { blogFinder, userFinder, errorHandler }

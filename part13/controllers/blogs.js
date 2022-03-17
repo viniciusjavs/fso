@@ -10,8 +10,9 @@ blogsRouter.get('/', async (_req, res) => {
 })
 
 blogsRouter.get('/:id', blogFinder, async (req, res) => {
-    if (req.blog) {
-        res.json(req.blog)
+    const blog = req.foundObj
+    if (blog) {
+        res.json(blog)
     } else {
         res.status(404).end()
     }
@@ -23,23 +24,25 @@ blogsRouter.post('/', async(req, res) => {
 })
 
 blogsRouter.put('/:id', blogFinder, async (req, res) => {
-    if (req.blog) {
+    const blog = req.foundObj
+    if (blog) {
         delete req.body.id
         for (const [key, value] of Object.entries(req.body)) {
-            if (req.blog[key] !== undefined) {
-                req.blog[key] = value
+            if (blog[key] !== undefined) {
+                blog[key] = value
             }
         }
-        await req.blog.save()
-        res.json(req.blog)
+        await blog.save()
+        res.json(blog)
     } else {
         res.status(404).end()
     }
 })
 
 blogsRouter.delete('/:id', blogFinder, async (req, res) => {
-    if (req.blog) {
-        await req.blog.destroy()
+    const blog = req.foundObj
+    if (blog) {
+        await blog.destroy()
         res.status(204).end()
     } else {
         res.status(404).end()
