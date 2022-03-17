@@ -19,8 +19,7 @@ blogsRouter.get('/:id', blogFinder, async (req, res) => {
 })
 
 blogsRouter.post('/', tokenExtractor, async(req, res) => {
-    const user = await User.findByPk(req.decodedToken.id)
-    const blog = await Blog.create({ ...req.body, userId: user.id })
+    const blog = await Blog.create({ ...req.body, userId: req.decodedToken.id })
     res.json(blog)
 })
 
@@ -40,9 +39,9 @@ blogsRouter.put('/:id', blogFinder, async (req, res) => {
     }
 })
 
-blogsRouter.delete('/:id', blogFinder, async (req, res) => {
+blogsRouter.delete('/:id', tokenExtractor, blogFinder, async (req, res) => {
     const blog = req.foundObj
-    if (blog) {
+    if (blog && blog.userId === req.decodedToken.id) {
         await blog.destroy()
         res.status(204).end()
     } else {

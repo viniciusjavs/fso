@@ -12,11 +12,15 @@ const objFinder = (modelName) =>
 const blogFinder = objFinder(Blog)
 const userFinder = objFinder(User)
 
-const tokenExtractor = (req, res, next) => {
+const tokenExtractor = async (req, res, next) => {
     const authorization = req.get('authorization')
     if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
         try {
             req.decodedToken = jwt.verify(authorization.substring(7), SECRET)
+            const user = await User.findByPk(req.decodedToken.id)
+            if (user.id !== req.decodedToken.id) {
+                throw new Error('User not found')
+            }
         } catch {
             res.status(401).json({ error: 'invalid token' })
         }
