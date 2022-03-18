@@ -5,7 +5,12 @@ const { blogFinder, tokenExtractor } = require('../util/middleware')
 const { Blog, User } = require('../models')
 
 blogsRouter.get('/', async (_req, res) => {
-    const blogs = await Blog.findAll()
+    const blogs = await Blog.findAll({
+        include: {
+            model: User,
+            attributes: ['name']
+        }
+    })
     res.json(blogs)
 })
 
