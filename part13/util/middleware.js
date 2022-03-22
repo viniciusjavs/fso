@@ -17,15 +17,15 @@ const tokenExtractor = async (req, res, next) => {
     if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
         try {
             req.decodedToken = jwt.verify(authorization.substring(7), SECRET)
-            const user = await User.findByPk(req.decodedToken.id)
+            const user = await User.findByPk(req.decodedToken.id, { attributes: ['id']})
             if (user.id !== req.decodedToken.id) {
                 throw new Error('User not found')
             }
         } catch {
-            res.status(401).json({ error: 'invalid token' })
+            return res.status(401).json({ error: 'invalid token' })
         }
     } else {
-        res.status(401).json({ error: 'token is missing' })
+        return res.status(401).json({ error: 'token is missing' })
     }
     next()
 }

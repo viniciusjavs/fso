@@ -2,7 +2,20 @@ const { Model, DataTypes } = require('sequelize')
 
 const { sequelize } = require('../util/db')
 
-class Blog extends Model {}
+class Blog extends Model {
+    toJSON() {
+        const obj = { ...this.get() }
+        const date = new Date(obj.year)
+        obj.year = date.getFullYear()
+        return obj
+    }
+}
+
+const nextYear = () => {
+    const date = new Date()
+    const year = date.getFullYear() + 1
+    return `${year}-01-01`
+}
 
 Blog.init(
 {
@@ -25,6 +38,14 @@ Blog.init(
     likes: {
         type: DataTypes.INTEGER,
         defaultValue: 0
+    },
+    year: {
+        type: DataTypes.DATEONLY,
+        allowNull: false,
+        validate: {
+            isAfter: '1990-12-31',
+            isBefore: nextYear()
+        }
     }
 },
 {
