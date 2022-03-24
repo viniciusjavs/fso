@@ -21,7 +21,8 @@ usersRouter.get('/:id', async (req, res) => {
             as: 'readings',
             attributes: { exclude: ['userId', 'createdAt', 'updatedAt'] },
             through: {
-                attributes: []
+                as: 'readinglists',
+                attributes: ['id', 'state']
             }
         }
     })
