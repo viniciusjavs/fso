@@ -1,4 +1,4 @@
-const { Blog, User } = require('../models')
+const { Blog, User, Session } = require('../models')
 const jwt = require('jsonwebtoken')
 
 const { SECRET }= require('./config')
@@ -11,15 +11,30 @@ const objFinder = (modelName) =>
 
 const blogFinder = objFinder(Blog)
 const userFinder = objFinder(User)
+const sessionFinder = objFinder(Session)
 
 const tokenExtractor = async (req, res, next) => {
     const authorization = req.get('authorization')
     if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
         try {
-            req.decodedToken = jwt.verify(authorization.substring(7), SECRET)
-            const user = await User.findByPk(req.decodedToken.id, { attributes: ['id']})
-            if (user.id !== req.decodedToken.id) {
-                throw new Error('User not found')
+            const token = authorization.substring(7)
+            req.decodedToken = jwt.verify(token, SECRET)
+            const user = await User.findOne({
+                attributes: ['id', 'active'],
+                where: {
+                    id: req.decodedToken.id,
+                    active: true
+                },
+                include: {
+                    model: Session,
+                    attributes: ['id'],
+                    where: {
+                        token
+                    }
+                }
+            })
+            if (!user) {
+                throw new Error('Unauthorized')
             }
         } catch {
             return res.status(401).json({ error: 'invalid token' })
@@ -42,4 +57,4 @@ const errorHandler = (error, _req, res, next) => {
     next(error)
 }
 
-module.exports = { blogFinder, userFinder, tokenExtractor, errorHandler }
+module.exports = { blogFinder, userFinder, tokenExtractor, errorHandler, sessionFinder }

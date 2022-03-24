@@ -4,12 +4,14 @@ const jwt = require('jsonwebtoken')
 
 const { SECRET } = require('../util/config')
 const User = require('../models/user')
+const { Session } = require('../models')
 
 loginRouter.post('/', async (req, res) => {
     const { username, password } = req.body
-    const user = await User.findOne({
+    const user = await User.scope('login').findOne({
         where: {
-            username
+            username,
+            active: true
         }
     })
     const error = 'invalid username or password'
@@ -25,6 +27,7 @@ loginRouter.post('/', async (req, res) => {
         id: user.id
     }
     const token = jwt.sign(userForToken, SECRET)
+    await Session.create({ token, userId: user.id })
     res.status(200).send({ token, username: user.username, name: user.name })
 })
 

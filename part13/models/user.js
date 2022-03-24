@@ -25,6 +25,11 @@ User.init({
     passwordHash: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    active: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+        allowNull: false
     }
 }, {
     sequelize,
@@ -33,6 +38,11 @@ User.init({
     modelName: 'user',
     defaultScope: {
         attributes: { exclude: ['createdAt', 'updatedAt', 'passwordHash'] }
+    },
+    scopes: {
+        login: {
+            attributes: { exclude: ['createdAt', 'updatedAt'] }
+        }
     }
 })
 
