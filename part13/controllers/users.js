@@ -22,7 +22,10 @@ usersRouter.get('/:id', async (req, res) => {
             attributes: { exclude: ['userId', 'createdAt', 'updatedAt'] },
             through: {
                 as: 'readinglists',
-                attributes: ['id', 'state']
+                attributes: ['id', 'state'],
+                where: req.query.state
+                    ? { state: req.query.state }
+                    : {}
             }
         }
     })
