@@ -13,8 +13,19 @@ usersRouter.get('/', async (_req, res) => {
     res.json(users)
 })
 
-usersRouter.get('/:id', userFinder, async (req, res) => {
-    const user = req.foundObj
+usersRouter.get('/:id', async (req, res) => {
+    const user = await User.findByPk(req.params.id, {
+        attributes: { exclude: ['id', 'createdAt', 'updatedAt', 'passwordHash'] },
+        include: {
+            model: Blog,
+            as: 'readings',
+            attributes: { exclude: ['userId', 'createdAt', 'updatedAt'] },
+            through: {
+                attributes: []
+            }
+        }
+    })
+
     if (user) {
         res.json(user)
     } else {

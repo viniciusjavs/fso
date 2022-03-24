@@ -2,13 +2,7 @@ const { Model, DataTypes } = require('sequelize')
 
 const { sequelize } = require('../util/db')
 
-class User extends Model {
-    toJSON() {
-        const obj = { ...this.get() }
-        delete obj.passwordHash
-        return obj
-    }
-}
+class User extends Model {}
 
 User.init({
     id: {
@@ -36,7 +30,10 @@ User.init({
     sequelize,
     underscored: true,
     timestamps: true,
-    modelName: 'user'
+    modelName: 'user',
+    defaultScope: {
+        attributes: { exclude: ['createdAt', 'updatedAt', 'passwordHash'] }
+    }
 })
 
 module.exports = User
